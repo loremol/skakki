@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/layout :: head('Membri del club', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <span>Admin</span>
+            <span class="sep">/</span>
+            <a th:href="@{/admin/members}">Membri</a>
+        </nav>
+
+        <h1>Membri del club</h1>
+
+        <div class="actions" style="margin-bottom:1rem">
+            <a th:href="@{/admin/members/new}" class="button">Crea nuovo membro</a>
+        </div>
+
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Nome</th>
+                        <th>Cognome</th>
+                        <th>Email</th>
+                        <th>Ruolo</th>
+                        <th>Data di iscrizione</th>
+                        <th>Data di nascita</th>
+                        <th>Genere</th>
+                        <th>ID FIDE</th>
+                        <th>ID FSI</th>
+                        <th>Paese</th>
+                        <th>Provincia</th>
+                        <th>Titolo</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="member : ${members}">
+                        <td th:text="${member.id}"></td>
+                        <td th:text="${member.username}"></td>
+                        <td th:text="${member.firstName}"></td>
+                        <td th:text="${member.lastName}"></td>
+                        <td th:text="${member.email}"></td>
+                        <td th:text="${T(java.lang.String).join(', ', member.roles.![name()])}"></td>
+                        <td th:text="${member.signupDate}"></td>
+                        <td th:text="${member.dateOfBirth}"></td>
+                        <td th:text="${member.gender}"></td>
+                        <td th:text="${member.fideId}"></td>
+                        <td th:text="${member.fsiId}"></td>
+                        <td th:text="${member.countryCode}"></td>
+                        <td th:text="${member.province}"></td>
+                        <td th:text="${member.title}"></td>
+                        <td>
+                            <a th:href="@{/admin/members/{id}(id=${member.id})}">Gestisci</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+</body>
+
+</html>

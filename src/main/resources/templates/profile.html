@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/layout :: head('Profilo membro', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <span th:text="${member.username}"></span>
+        </nav>
+
+        <h1>
+            <span th:if="${member.title}" th:text="${member.title + ' '}"></span><span
+                th:text="${member.firstName != null ? member.firstName + ' ' + member.lastName : member.username}"></span>
+        </h1>
+
+        <section class="card">
+            <h2>Dati personali</h2>
+            <dl class="dl-grid">
+                <dt>Username</dt>
+                <dd th:text="${member.username}"></dd>
+
+                <dt>Email</dt>
+                <dd th:text="${member.email}"></dd>
+
+                <dt th:if="${member.dateOfBirth}">Data di nascita</dt>
+                <dd th:if="${member.dateOfBirth}" th:text="${member.dateOfBirth}"></dd>
+
+                <dt th:if="${member.gender}">Genere</dt>
+                <dd th:if="${member.gender}" th:text="${member.gender}"></dd>
+
+                <dt>Membro dal</dt>
+                <dd th:text="${member.signupDate}"></dd>
+            </dl>
+        </section>
+
+        <section class="card">
+            <h2>Dati scacchistici</h2>
+            <dl class="dl-grid">
+                <dt th:if="${member.title}">Titolo</dt>
+                <dd th:if="${member.title}" th:text="${member.title}"></dd>
+
+                <dt th:if="${member.fideId}">ID FIDE</dt>
+                <dd th:if="${member.fideId}" th:text="${member.fideId}"></dd>
+
+                <dt th:if="${member.fsiId}">ID FSI</dt>
+                <dd th:if="${member.fsiId}" th:text="${member.fsiId}"></dd>
+
+                <dt th:if="${member.countryCode}">Paese</dt>
+                <dd th:if="${member.countryCode}" th:text="${member.countryCode}"></dd>
+
+                <dt th:if="${member.province}">Provincia</dt>
+                <dd th:if="${member.province}" th:text="${member.province}"></dd>
+            </dl>
+        </section>
+
+        <section class="card">
+            <h2>Tornei giocati</h2>
+            <p th:if="${#lists.isEmpty(participatedTournaments)}" class="muted">Nessun torneo a cui ha partecipato.</p>
+            <ul th:unless="${#lists.isEmpty(participatedTournaments)}" class="list-plain">
+                <li th:each="t : ${participatedTournaments}">
+                    <a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a>
+                </li>
+            </ul>
+        </section>
+
+        <section class="card" th:unless="${#lists.isEmpty(organizedTournaments)}">
+            <h2>Tornei organizzati</h2>
+            <ul class="list-plain">
+                <li th:each="t : ${organizedTournaments}">
+                    <a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a>
+                </li>
+            </ul>
+        </section>
+
+        <section class="card" th:unless="${#lists.isEmpty(arbiteredTournaments)}">
+            <h2>Tornei arbitrati</h2>
+            <ul class="list-plain">
+                <li th:each="t : ${arbiteredTournaments}">
+                    <a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

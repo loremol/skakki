@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/layout :: head('Skakki — Homepage', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <h1>Homepage</h1>
+
+        <div class="card-grid">
+
+            <section class="card" sec:authorize="hasRole('MEMBER')">
+                <h2>Sezione Soci</h2>
+                <p><a th:href="@{/tournaments}">Lista tornei club</a></p>
+            </section>
+
+            <section class="card" sec:authorize="hasRole('ORGANIZER')">
+                <h2>Sezione Organizzatori</h2>
+                <p><a th:href="@{/organize/create-tournament}">Crea nuovo torneo</a></p>
+            </section>
+
+            <section class="card" sec:authorize="hasRole('ADMIN')">
+                <h2>Sezione Amministrazione</h2>
+                <p><a th:href="@{/admin/members}">Gestionale utenti</a></p>
+            </section>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

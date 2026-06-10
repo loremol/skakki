@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="head(title, extraHead)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}">Skakki</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <th:block th:replace="${extraHead}"></th:block>
+</head>
+
+<body>
+
+    <header class="site-header" th:fragment="header">
+        <div class="site-header-inner">
+            <a th:href="@{/}" class="site-title">Club</a>
+            <nav class="site-nav">
+                <span sec:authorize="isAuthenticated()">
+                    <span class="muted">Benvenuto,</span>
+                    <strong sec:authentication="name"></strong>
+                    <span class="sep">/</span>
+                    <a th:href="@{/u/{id}(id=${@authenticationService.getLoggedInMember().id})}">Il mio profilo</a>
+                    <span class="sep">/</span>
+                    <a th:href="@{/change-password}">Cambia password</a>
+                    <span class="sep">/</span>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="button button--ghost button--small">Esci</button>
+                    </form>
+                </span>
+                <span sec:authorize="isAnonymous()">
+                    <a th:href="@{/login}">Login</a>
+                    <span class="sep">/</span>
+                    <a th:href="@{/register}">Iscriviti al club</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+</body>
+
+</html>

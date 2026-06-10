@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Richiesta non valida', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <span>Errore</span>
+        </nav>
+
+        <section class="card card--narrow card--danger">
+            <h1>Richiesta non valida (400)</h1>
+            <p th:text="${errorMessage != null ? errorMessage : 'La richiesta non &egrave; valida.'}"></p>
+            <div class="actions">
+                <a th:href="@{/}" class="button">Torna alla homepage</a>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Accesso negato', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <span>Errore</span>
+        </nav>
+
+        <section class="card card--narrow card--danger">
+            <h1>Accesso negato (403)</h1>
+            <p th:text="${errorMessage != null ? errorMessage : 'Non hai i permessi per eseguire questa operazione.'}">
+            </p>
+            <div class="actions">
+                <a th:href="@{/}" class="button">Torna alla homepage</a>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

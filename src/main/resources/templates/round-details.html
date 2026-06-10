@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Round', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <a th:href="@{/tournaments}">Tornei</a>
+            <span class="sep">/</span>
+            <a th:href="@{/tournaments/{id}(id=${tournament.id})}" th:text="${tournament.name}"></a>
+            <span class="sep">/</span>
+            <span>Round <span th:text="${round.roundNumber}"></span></span>
+        </nav>
+
+        <h1>Round <span th:text="${round.roundNumber}"></span></h1>
+
+        <div th:if="${param.success}" class="alert alert--ok">
+            <p>Round aggiornato con successo.</p>
+        </div>
+
+        <section class="card">
+            <dl class="dl-grid">
+                <dt>Data</dt>
+                <dd th:text="${round.playDate != null ? round.playDate : 'Non definita'}"></dd>
+            </dl>
+        </section>
+
+        <section class="card matches">
+            <h2>Partite</h2>
+            <p th:if="${#lists.isEmpty(matches)}" class="muted">Nessuna partita registrata per questo round.</p>
+            <div th:unless="${#lists.isEmpty(matches)}" class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Bianco</th>
+                            <th>Nero</th>
+                            <th>Risultato</th>
+                            <th>Tipo</th>
+                            <th>Punti Bianco</th>
+                            <th>Punti Nero</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="match : ${matches}">
+                            <td th:text="${match.white.username}"></td>
+                            <td th:text="${match.black != null ? match.black.username : '—'}"></td>
+                            <td th:text="${match.result}"></td>
+                            <td th:text="${match.matchType}"></td>
+                            <td th:text="${match.whitePoints}"></td>
+                            <td th:text="${match.blackPoints}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section th:if="${isArbiter}" class="card arbiter-actions">
+            <h2>Azioni arbitro</h2>
+
+            <form th:action="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${round.id})}"
+                th:method="put" class="form-grid">
+                <label for="playDate">Data round</label>
+                <input type="date" id="playDate" name="playDate" th:value="${round.playDate}" />
+                <div class="form-submit actions">
+                    <button type="submit" class="button">Aggiorna data</button>
+                </div>
+            </form>
+
+            <form th:action="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${round.id})}"
+                th:method="delete" style="margin-top:1rem">
+                <button type="submit" class="button button--danger"
+                    onclick="return confirm('Eliminare il round? Questa operazione è irreversibile.')">Elimina
+                    round</button>
+            </form>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/layout :: head('Torneo', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <a th:href="@{/tournaments}">Tornei</a>
+            <span class="sep">/</span>
+            <span th:text="${tournament.name}"></span>
+        </nav>
+
+        <h1><span th:text="${tournament.name}"></span></h1>
+
+        <div th:if="${param.success}" class="alert alert--ok">
+            <p>Operazione completata con successo.</p>
+        </div>
+
+        <section class="card">
+            <h2>Dettagli torneo</h2>
+            <dl class="dl-grid tournament-details">
+                <dt>Descrizione</dt>
+                <dd th:text="${tournament.description}"></dd>
+
+                <dt>Organizzatore</dt>
+                <dd>
+                    <a th:if="${tournament.organizer != null}" th:href="@{/u/{id}(id=${tournament.organizer.id})}"
+                        th:text="${(tournament.organizer.title != null ? tournament.organizer.title + ' ' : '') + (tournament.organizer.firstName != null ? tournament.organizer.firstName + ' ' + tournament.organizer.lastName : tournament.organizer.username)}"></a>
+                </dd>
+
+                <dt>Sede</dt>
+                <dd th:text="${tournament.location != null ? tournament.location : '—'}"></dd>
+
+                <dt>Scadenza iscrizioni</dt>
+                <dd th:text="${tournament.registrationDeadline != null ? tournament.registrationDeadline : '—'}"></dd>
+
+                <dt>Data inizio</dt>
+                <dd th:text="${tournament.startDate != null ? tournament.startDate : '—'}"></dd>
+
+                <dt>Data fine</dt>
+                <dd th:text="${tournament.endDate != null ? tournament.endDate : '—'}"></dd>
+
+                <dt>Numero di round</dt>
+                <dd th:text="${tournament.numberOfRounds != null ? tournament.numberOfRounds : '—'}"></dd>
+
+                <dt>Arbitri</dt>
+                <dd>
+                    <span th:if="${#lists.isEmpty(tournament.arbiters)}" class="muted">Nessun arbitro assegnato.</span>
+                    <ul th:unless="${#lists.isEmpty(tournament.arbiters)}" class="list-plain">
+                        <li th:each="a : ${tournament.arbiters}">
+                            <a th:href="@{/u/{id}(id=${a.id})}"
+                                th:text="${(a.title != null ? a.title + ' ' : '') + (a.firstName != null ? a.firstName + ' ' + a.lastName : a.username)}"></a>
+                        </li>
+                    </ul>
+                </dd>
+            </dl>
+        </section>
+
+        <section class="card">
+            <h2>Azioni</h2>
+            <div class="actions">
+                <form th:if="${!isParticipant}" th:action="@{/tournaments/{id}/signup(id=${tournament.id})}"
+                    method="post" sec:authorize="hasRole('MEMBER')">
+                    <button type="submit" class="button">Richiedi iscrizione al torneo</button>
+                </form>
+
+                <form th:if="${!isArbiter}" th:action="@{/tournaments/{id}/request-arbiter-role(id=${tournament.id})}"
+                    method="post" sec:authorize="hasRole('MEMBER')">
+                    <button type="submit" class="button button--ghost">Candidati come arbitro</button>
+                </form>
+
+                <form th:if="${isOrganizer}" th:action="@{/organize/tournament/{id}(id=${tournament.id})}" method="get">
+                    <button type="submit" class="button">Gestisci richieste</button>
+                </form>
+
+                <form th:if="${isArbiter}" th:action="@{/tournaments/{id}/register-match(id=${tournament.id})}"
+                    method="get">
+                    <button type="submit" class="button">Registra partita</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="card organizer-actions" th:if="${isOrganizer}">
+            <h2>Organizzatore</h2>
+            <p class="muted">Sei l'organizzatore di questo torneo.</p>
+
+            <form th:action="@{/organize/tournament/{id}(id=${tournament.id})}" th:method="delete"
+                style="margin-top:1rem">
+                <button type="submit" class="button button--danger"
+                    onclick="return confirm('Eliminare il torneo? Questa operazione è irreversibile.')">Elimina
+                    torneo</button>
+            </form>
+        </section>
+
+        <section class="card arbiter-actions" th:if="${isArbiter}">
+            <h2>Arbitro</h2>
+            <p class="muted">Sei un arbitro di questo torneo.</p>
+
+            <form th:action="@{/tournaments/{id}/rounds/create(id=${tournament.id})}" method="post" class="form-grid">
+                <label for="playDate">Data round</label>
+                <input type="date" id="playDate" name="playDate">
+                <div class="form-submit actions">
+                    <button type="submit" class="button">Crea nuovo round</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card participants">
+            <h2>Partecipanti</h2>
+            <p th:if="${#lists.isEmpty(tournament.participants)}" class="muted">Nessun partecipante iscritto.</p>
+            <ul th:unless="${#lists.isEmpty(tournament.participants)}" class="list-plain">
+                <li th:each="p : ${tournament.participants}">
+                    <a th:href="@{/u/{id}(id=${p.id})}"
+                        th:text="${(p.title != null ? p.title + ' ' : '') + (p.firstName != null ? p.firstName + ' ' + p.lastName : p.username)}"></a>
+                </li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Classifica</h2>
+            <p th:if="${#lists.isEmpty(leaderboard)}" class="muted">Nessun partecipante iscritto.</p>
+            <div th:unless="${#lists.isEmpty(leaderboard)}" class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Giocatore</th>
+                            <th>Punti</th>
+                            <th>Buchholz</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="entry : ${leaderboard}">
+                            <td th:text="${entry.rank}"></td>
+                            <td>
+                                <a th:href="@{/u/{id}(id=${entry.member.id})}"
+                                    th:text="${entry.member.username}"></a>
+                            </td>
+                            <td th:text="${entry.totalPoints}"></td>
+                            <td th:text="${entry.buchholzPoints}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="rounds">
+            <h2>Round</h2>
+            <p th:if="${#lists.isEmpty(rounds)}" class="muted">Nessun round ancora creato.</p>
+            <div th:unless="${#lists.isEmpty(rounds)}" th:each="round : ${rounds}" class="card">
+                <h3>
+                    Round <span th:text="${round.roundNumber}"></span>
+                    <span class="muted">&ndash;</span>
+                    <span th:text="${round.playDate != null ? round.playDate : 'Data non definita'}"></span>
+                    <span class="sep">/</span>
+                    <a
+                        th:href="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${round.id})}">Dettagli</a>
+                </h3>
+                <p th:if="${#lists.isEmpty(round.matches)}" class="muted">Nessuna partita registrata.</p>
+                <div th:unless="${#lists.isEmpty(round.matches)}" class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Bianco</th>
+                                <th>Nero</th>
+                                <th>Tipo</th>
+                                <th>Risultato</th>
+                                <th>Punti Bianco</th>
+                                <th>Punti Nero</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="match : ${round.matches}">
+                                <td th:text="${match.white.username}"></td>
+                                <td th:text="${match.black != null ? match.black.username : '—'}"></td>
+                                <td th:text="${match.matchType}"></td>
+                                <td th:text="${match.result}"></td>
+                                <td th:text="${match.whitePoints}"></td>
+                                <td th:text="${match.blackPoints}"></td>
+                                <td><a th:href="@{/matches/{matchId}(matchId=${match.id})}">Dettagli</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

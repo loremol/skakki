@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Modifica partita', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <a th:href="@{/tournaments}">Tornei</a>
+            <span class="sep">/</span>
+            <a th:href="@{/tournaments/{id}(id=${tournament.id})}" th:text="${tournament.name}"></a>
+            <span class="sep">/</span>
+            <a th:href="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${match.round.id})}">Round
+                <span th:text="${match.round.roundNumber}"></span></a>
+            <span class="sep">/</span>
+            <a th:href="@{/matches/{id}(id=${match.id})}">Partita #<span th:text="${match.id}"></span></a>
+            <span class="sep">/</span>
+            <span>Modifica</span>
+        </nav>
+
+        <h1>Modifica partita #<span th:text="${match.id}"></span></h1>
+
+        <div th:if="${param.success}" class="alert alert--ok">
+            <p>Partita modificata con successo!</p>
+        </div>
+
+        <form th:object="${matchDto}" th:method="put" th:action="@{/matches/{id}/edit(id=${match.id})}">
+            <input type="hidden" th:field="*{roundNumber}" />
+
+            <section class="card">
+                <h2>Dati partita</h2>
+                <div class="form-grid">
+                    <label for="whiteId">Bianco</label>
+                    <span>
+                        <select id="whiteId" th:field="*{whiteId}" required>
+                            <option th:each="p : ${participants}" th:value="${p.id}" th:text="${p.username}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('whiteId')}" th:errors="*{whiteId}"
+                            class="alert alert--inline alert--err"></span>
+                    </span>
+
+                    <label for="blackId">Nero</label>
+                    <select id="blackId" th:field="*{blackId}">
+                        <option value="">-- Nessuno (Bye) --</option>
+                        <option th:each="p : ${participants}" th:value="${p.id}" th:text="${p.username}"></option>
+                    </select>
+
+                    <label for="matchType">Tipo partita</label>
+                    <select id="matchType" th:field="*{matchType}">
+                        <option th:each="t : ${matchTypes}" th:value="${t}" th:text="${t}"></option>
+                    </select>
+
+                    <label for="result">Risultato</label>
+                    <span>
+                        <select id="result" th:field="*{result}">
+                            <option value="">-- Automatico per Bye/Forfeit --</option>
+                            <option th:each="r : ${results}" th:value="${r}" th:text="${r}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('result')}" th:errors="*{result}"
+                            class="alert alert--inline alert--err"></span>
+                    </span>
+
+                    <label for="pgn">PGN</label>
+                    <span>
+                        <textarea id="pgn" th:field="*{pgn}" rows="6" cols="60"></textarea>
+                        <span th:if="${#fields.hasErrors('pgn')}" th:errors="*{pgn}"
+                            class="alert alert--inline alert--err"></span>
+                    </span>
+                </div>
+
+                <div class="actions" style="margin-top:1rem">
+                    <button type="submit" class="button">Salva modifiche</button>
+                    <a th:href="@{/matches/{id}(id=${match.id})}" class="button button--ghost">Annulla</a>
+                </div>
+            </section>
+        </form>
+
+    </main>
+
+</body>
+
+</html>

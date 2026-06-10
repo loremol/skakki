@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/layout :: head('Richieste torneo', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <a th:href="@{/tournaments}">Tornei</a>
+            <span class="sep">/</span>
+            <a th:href="@{/tournaments/{id}(id=${tournament.id})}" th:text="${tournament.name}"></a>
+            <span class="sep">/</span>
+            <span>Richieste</span>
+        </nav>
+
+        <h1>Torneo: <span th:text="${tournament.name}"></span></h1>
+
+        <div th:if="${param.success}" class="alert alert--ok">
+            <p>Operazione completata con successo.</p>
+        </div>
+
+        <section class="card">
+            <h2>Richieste di iscrizione</h2>
+            <p th:if="${#lists.isEmpty(signupRequests)}" class="muted">Nessuna richiesta presente.</p>
+            <div th:unless="${#lists.isEmpty(signupRequests)}" class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Data richiesta</th>
+                            <th>Nome utente</th>
+                            <th>Stato</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="request : ${signupRequests}">
+                            <td th:text="${request.requestDate}"></td>
+                            <td>
+                                <a th:text="${request.member.username}"
+                                    th:href="@{/u/{id}(id=${request.member.id})}"></a>
+                            </td>
+                            <td th:text="${request.status}"></td>
+                            <td th:if="${request.status.name() == 'PENDING'}">
+                                <div class="actions">
+                                    <form
+                                        th:action="@{/organize/tournament/{id}/accept-signup/{signupRequestId}(id=${tournament.id}, signupRequestId=${request.id})}"
+                                        method="post">
+                                        <button type="submit" class="button button--small">Accetta</button>
+                                    </form>
+                                    <form
+                                        th:action="@{/organize/tournament/{id}/reject-signup/{signupRequestId}(id=${tournament.id}, signupRequestId=${request.id})}"
+                                        method="post">
+                                        <button type="submit"
+                                            class="button button--ghost button--small">Rifiuta</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td th:if="${request.status.name() == 'ACCEPTED'}">
+                                <form
+                                    th:action="@{/organize/tournament/{id}/reject-signup/{signupRequestId}(id=${tournament.id}, signupRequestId=${request.id})}"
+                                    method="post">
+                                    <button type="submit" class="button button--ghost button--small">Rifiuta</button>
+                                </form>
+                            </td>
+                            <td th:if="${request.status.name() == 'REJECTED'}">
+                                <form
+                                    th:action="@{/organize/tournament/{id}/accept-signup/{signupRequestId}(id=${tournament.id}, signupRequestId=${request.id})}"
+                                    method="post">
+                                    <button type="submit" class="button button--small">Accetta</button>
+                                </form>
+                            </td>
+                            <td
+                                th:if="${request.status.name() != 'PENDING' and request.status.name() != 'ACCEPTED' and request.status.name() != 'REJECTED'}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Candidature arbitro</h2>
+            <p th:if="${#lists.isEmpty(arbiterApplications)}" class="muted">Nessuna richiesta arbitro presente.</p>
+            <div th:unless="${#lists.isEmpty(arbiterApplications)}" class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Data richiesta</th>
+                            <th>Nome utente</th>
+                            <th>Stato</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="arbiterApplication : ${arbiterApplications}">
+                            <td th:text="${arbiterApplication.requestDate}"></td>
+                            <td>
+                                <a th:text="${arbiterApplication.member.username}"
+                                    th:href="@{/u/{id}(id=${arbiterApplication.member.id})}"></a>
+                            </td>
+                            <td th:text="${arbiterApplication.status}"></td>
+                            <td th:if="${arbiterApplication.status.name() == 'PENDING'}">
+                                <div class="actions">
+                                    <form
+                                        th:action="@{/organize/tournament/{id}/accept-arbiter/{applicationId}(id=${tournament.id}, applicationId=${arbiterApplication.id})}"
+                                        method="post">
+                                        <button type="submit" class="button button--small">Accetta</button>
+                                    </form>
+                                    <form
+                                        th:action="@{/organize/tournament/{id}/reject-arbiter/{applicationId}(id=${tournament.id}, applicationId=${arbiterApplication.id})}"
+                                        method="post">
+                                        <button type="submit"
+                                            class="button button--ghost button--small">Rifiuta</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td th:if="${arbiterApplication.status.name() == 'ACCEPTED'}">
+                                <form
+                                    th:action="@{/organize/tournament/{id}/reject-arbiter/{applicationId}(id=${tournament.id}, applicationId=${arbiterApplication.id})}"
+                                    method="post">
+                                    <button type="submit" class="button button--ghost button--small">Rifiuta</button>
+                                </form>
+                            </td>
+                            <td th:if="${arbiterApplication.status.name() == 'REJECTED'}">
+                                <form
+                                    th:action="@{/organize/tournament/{id}/accept-arbiter/{applicationId}(id=${tournament.id}, applicationId=${arbiterApplication.id})}"
+                                    method="post">
+                                    <button type="submit" class="button button--small">Accetta</button>
+                                </form>
+                            </td>
+                            <td
+                                th:if="${arbiterApplication.status.name() != 'PENDING' and arbiterApplication.status.name() != 'ACCEPTED' and arbiterApplication.status.name() != 'REJECTED'}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

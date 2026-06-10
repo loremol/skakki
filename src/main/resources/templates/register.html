@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Registrazione', ~{})}"></head>
+
+<body>
+
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Homepage</a>
+            <span class="sep">/</span>
+            <span>Registrazione</span>
+        </nav>
+
+        <h1>Registrazione</h1>
+
+        <div th:if="${param.success}" class="alert alert--ok">
+            <p>Registrazione avvenuta con successo!</p>
+        </div>
+
+        <section class="card card--narrow">
+            <form th:action="@{/register}" th:object="${registrationDto}" method="post" class="form-grid">
+                <label for="username">Username</label>
+                <span>
+                    <input type="text" id="username" th:field="*{username}" required />
+                    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
+                        class="alert alert--inline alert--err"></span>
+                </span>
+
+                <label for="email">Email</label>
+                <span>
+                    <input type="email" id="email" th:field="*{email}" required />
+                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                        class="alert alert--inline alert--err"></span>
+                </span>
+
+                <label for="password">Password</label>
+                <span>
+                    <input type="password" id="password" th:field="*{password}" required />
+                    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+                        class="alert alert--inline alert--err"></span>
+                </span>
+
+                <div class="form-submit actions">
+                    <button type="submit" class="button">Registrati</button>
+                    <a th:href="@{/login}" class="button button--ghost">Accedi</a>
+                </div>
+            </form>
+        </section>
+
+        <p class="muted"><a th:href="@{/login}">Hai già un account? Accedi</a></p>
+
+    </main>
+
+</body>
+
+</html>
