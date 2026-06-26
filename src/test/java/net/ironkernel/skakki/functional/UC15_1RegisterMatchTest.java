@@ -103,7 +103,7 @@ class UC15_1RegisterMatchTest extends AbstractFunctionalTest {
 
         @Test
         @WithMockUser(username = "alice", roles = { "MEMBER" })
-        public void alt6a_roundNumberAboveMax_returnsConflict() throws Exception {
+        public void alt5a_1_roundNumberAboveMax_returnsConflict() throws Exception {
                 Tournament t = tournamentWithArbiter(organizer, alice,
                                 LocalDate.now().plusDays(30), (short) 2, white, black);
                 round(t, (short) 1, LocalDate.now());
@@ -124,7 +124,7 @@ class UC15_1RegisterMatchTest extends AbstractFunctionalTest {
 
         @Test
         @WithMockUser(username = "alice", roles = { "MEMBER" })
-        public void alt7a_normalWithoutBlack_returnsBadRequest() throws Exception {
+        public void alt5a_2_normalWithoutBlack_returnsBadRequest() throws Exception {
                 Tournament t = tournamentWithArbiter(organizer, alice,
                                 LocalDate.now().plusDays(30), (short) 3, white);
 
