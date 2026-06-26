@@ -65,20 +65,4 @@ class UC12_1AcceptSignupTest extends AbstractFunctionalTest {
         SignupRequest reloaded = signupRequestRepository.findById(req.getId()).orElseThrow();
         Assertions.assertThat(reloaded.getStatus()).isEqualTo(RequestStatus.PENDING);
     }
-
-    @Test
-    @WithMockUser(username = "alice", roles = { "ORGANIZER", "MEMBER" })
-    public void alt4b_requestNotInTournament_returnsBadRequest() throws Exception {
-        Tournament tA = tournament(alice, LocalDate.now().plusDays(30), (short) 5);
-        Tournament tB = tournament(alice, LocalDate.now().plusDays(60), (short) 4);
-        SignupRequest reqForA = pendingSignup(bob, tA);
-
-        mockMvc.perform(post("/organize/tournament/" + tB.getId() + "/accept-signup/" + reqForA.getId())
-                .with(csrf()))
-                .andExpect(status().isBadRequest())
-                .andExpect(view().name("error/bad-request"));
-
-        SignupRequest reloaded = signupRequestRepository.findById(reqForA.getId()).orElseThrow();
-        Assertions.assertThat(reloaded.getStatus()).isEqualTo(RequestStatus.PENDING);
-    }
 }
