@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="https://www.thymeleaf.org">
 
 <head th:replace="~{fragments/layout :: head('Registra partita', ~{})}"></head>
 
@@ -8,84 +7,77 @@
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <a th:href="@{/tournaments}">Tornei</a>
-            <span class="sep">/</span>
-            <a th:href="@{/tournaments/{id}(id=${tournament.id})}" th:text="${tournament.name}"></a>
-            <span class="sep">/</span>
-            <span>Registra partita</span>
-        </nav>
+        <a class="back" th:href="@{/tournaments/{id}(id=${tournament.id})}"
+            th:text="'‹ ' + ${tournament.name}"></a>
 
-        <h1>Registra nuova partita</h1>
-
-        <div th:if="${param.success}" class="alert alert--ok">
-            <p>Partita registrata con successo!</p>
+        <div class="head">
+            <h1>Registra una partita</h1>
         </div>
+        <p class="sub">Per bye e forfait il risultato lo mette il sistema: lascia il campo vuoto.</p>
+
+        <p class="note" th:if="${param.success}">Partita registrata.</p>
 
         <form th:object="${matchDto}" method="post"
             th:action="@{/tournaments/{id}/register-match(id=${tournament.id})}">
 
-            <section class="card">
-                <h2>Dati partita</h2>
-                <div class="form-grid">
-                    <label for="roundNumber">Round</label>
-                    <span>
-                        <select id="roundNumber" th:field="*{roundNumber}" required>
-                            <option value="">-- Seleziona round --</option>
-                            <option th:each="r : ${rounds}" th:value="${r.roundNumber}"
-                                th:text="${'Round ' + r.roundNumber}"></option>
-                        </select>
-                        <span th:if="${#fields.hasErrors('roundNumber')}" th:errors="*{roundNumber}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
+            <div class="fields">
+                <div class="f narrow">
+                    <label for="roundNumber">Turno</label>
+                    <select id="roundNumber" th:field="*{roundNumber}" required>
+                        <option value="">Scegli</option>
+                        <option th:each="r : ${rounds}" th:value="${r.roundNumber}" th:text="${r.roundNumber}">
+                        </option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('roundNumber')}" th:errors="*{roundNumber}" class="err"></span>
+                </div>
+                <div class="f">
                     <label for="whiteId">Bianco</label>
-                    <span>
-                        <select id="whiteId" th:field="*{whiteId}" required>
-                            <option th:each="p : ${participants}" th:value="${p.id}" th:text="${p.username}"></option>
-                        </select>
-                        <span th:if="${#fields.hasErrors('whiteId')}" th:errors="*{whiteId}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
+                    <select id="whiteId" th:field="*{whiteId}" required>
+                        <option th:each="p : ${participants}" th:value="${p.id}"
+                            th:text="${p.firstName != null ? p.firstName + ' ' + p.lastName : p.username}"></option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('whiteId')}" th:errors="*{whiteId}" class="err"></span>
+                </div>
+                <div class="f">
                     <label for="blackId">Nero</label>
                     <select id="blackId" th:field="*{blackId}">
-                        <option value="">-- Nessuno (Bye) --</option>
-                        <option th:each="p : ${participants}" th:value="${p.id}" th:text="${p.username}"></option>
+                        <option value="">Nessuno, è un bye</option>
+                        <option th:each="p : ${participants}" th:value="${p.id}"
+                            th:text="${p.firstName != null ? p.firstName + ' ' + p.lastName : p.username}"></option>
                     </select>
-
-                    <label for="matchType">Tipo partita</label>
+                </div>
+                <div class="f">
+                    <label for="matchType">Tipo</label>
                     <select id="matchType" th:field="*{matchType}">
-                        <option th:each="t : ${matchTypes}" th:value="${t}" th:text="${t}"></option>
+                        <option th:each="t : ${matchTypes}" th:value="${t}"
+                            th:text="${t.name() == 'BYE' ? 'Bye' : (t.name() == 'WHITE_FORFEIT' ? 'Forfait del bianco' : (t.name() == 'BLACK_FORFEIT' ? 'Forfait del nero' : 'Normale'))}">
+                        </option>
                     </select>
-
+                </div>
+                <div class="f narrow">
                     <label for="result">Risultato</label>
-                    <span>
-                        <select id="result" th:field="*{result}">
-                            <option value="">-- Automatico per Bye/Forfeit --</option>
-                            <option th:each="r : ${results}" th:value="${r}" th:text="${r}"></option>
-                        </select>
-                        <span th:if="${#fields.hasErrors('result')}" th:errors="*{result}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="pgn">PGN</label>
-                    <span>
-                        <textarea id="pgn" th:field="*{pgn}" rows="6" cols="60"></textarea>
-                        <span th:if="${#fields.hasErrors('pgn')}" th:errors="*{pgn}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
+                    <select id="result" th:field="*{result}">
+                        <option value="">Automatico</option>
+                        <option th:each="r : ${results}" th:value="${r}"
+                            th:text="${r.name() == 'WHITE_WIN' ? '1-0' : (r.name() == 'BLACK_WIN' ? '0-1' : '½-½')}">
+                        </option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('result')}" th:errors="*{result}" class="err"></span>
                 </div>
-
-                <div class="actions" style="margin-top:1rem">
-                    <button type="submit" class="button">Registra partita</button>
-                    <a th:href="@{/tournaments/{id}(id=${tournament.id})}" class="button button--ghost">Annulla</a>
+                <div class="f wide">
+                    <label for="pgn">Mosse in PGN</label>
+                    <textarea id="pgn" th:field="*{pgn}" rows="8"
+                        placeholder="1. e4 e5 2. Nf3 Nc6 3. Bb5 …"></textarea>
+                    <span th:if="${#fields.hasErrors('pgn')}" th:errors="*{pgn}" class="err"></span>
                 </div>
-            </section>
+            </div>
+
+            <div class="row">
+                <button type="submit" class="btn">Registra</button>
+                <a th:href="@{/tournaments/{id}(id=${tournament.id})}" class="btn quiet">Annulla</a>
+            </div>
         </form>
 
     </main>

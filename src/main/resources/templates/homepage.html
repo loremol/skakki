@@ -1,36 +1,40 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head th:replace="~{fragments/layout :: head('Skakki — Homepage', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head('skakki', ~{})}"></head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page" sec:authorize="isAuthenticated()">
+        <div th:with="tornei=${@tournamentService.getAllTournaments()}">
 
-        <h1>Homepage</h1>
+            <div class="head">
+                <h1>Tornei del club</h1>
+            </div>
+            <p class="sub"
+                th:text="${#lists.size(tornei) == 1 ? 'un torneo in archivio' : #lists.size(tornei) + ' tornei in archivio'}">
+            </p>
 
-        <div class="card-grid">
-
-            <section class="card" sec:authorize="hasRole('MEMBER')">
-                <h2>Sezione Soci</h2>
-                <p><a th:href="@{/tournaments}">Lista tornei club</a></p>
-            </section>
-
-            <section class="card" sec:authorize="hasRole('ORGANIZER')">
-                <h2>Sezione Organizzatori</h2>
-                <p><a th:href="@{/organize/create-tournament}">Crea nuovo torneo</a></p>
-            </section>
-
-            <section class="card" sec:authorize="hasRole('ADMIN')">
-                <h2>Sezione Amministrazione</h2>
-                <p><a th:href="@{/admin/members}">Gestionale utenti</a></p>
-            </section>
+            <p class="dim" th:if="${#lists.isEmpty(tornei)}">Non c'è ancora nessun torneo.</p>
+            <th:block th:unless="${#lists.isEmpty(tornei)}">
+                <th:block th:replace="~{fragments/bits :: tlist(${tornei})}"></th:block>
+            </th:block>
 
         </div>
+    </main>
 
+    <main class="page" sec:authorize="isAnonymous()">
+        <div class="head">
+            <h1>Circolo scacchistico</h1>
+        </div>
+        <p class="sub">Tornei sociali, classifiche e partite del club.<br>Per vedere il calendario serve un
+            account.</p>
+        <div class="row">
+            <a th:href="@{/login}" class="btn">Entra</a>
+            <a th:href="@{/register}" class="btn quiet">Iscriviti al club</a>
+        </div>
     </main>
 
 </body>

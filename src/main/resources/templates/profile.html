@@ -1,93 +1,124 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="https://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Profilo membro', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head(${member.username}, ~{})}"></head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page" th:with="sonoIo=${@authenticationService.getLoggedInMember().id == member.id}">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <span th:text="${member.username}"></span>
-        </nav>
+        <div class="head">
+            <h1 th:text="${member.firstName != null ? member.firstName + ' ' + member.lastName : member.username}">
+            </h1>
+            <span th:if="${member.title != null}" class="tag" th:text="${member.title}"></span>
+        </div>
 
-        <h1>
-            <span th:if="${member.title}" th:text="${member.title + ' '}"></span><span
-                th:text="${member.firstName != null ? member.firstName + ' ' + member.lastName : member.username}"></span>
-        </h1>
+        <div class="sub inline-facts">
+            <span>
+                <span class="k">Username</span>
+                <span class="mono" th:text="${member.username}"></span>
+            </span>
+            <span>
+                <span class="k">Email</span>
+                <span th:text="${member.email}"></span>
+            </span>
+            <span th:if="${member.province != null}">
+                <span class="k">Provincia</span>
+                <span th:text="${member.province}"></span>
+            </span>
+            <span>
+                <span class="k">Socio dal</span>
+                <span class="mono"><th:block th:replace="~{fragments/bits :: day(${member.signupDate})}"></th:block></span>
+            </span>
+            <a th:if="${sonoIo}" th:href="@{/change-password}">cambia password</a>
+        </div>
 
-        <section class="card">
-            <h2>Dati personali</h2>
-            <dl class="dl-grid">
-                <dt>Username</dt>
-                <dd th:text="${member.username}"></dd>
+        <div class="split">
 
-                <dt>Email</dt>
-                <dd th:text="${member.email}"></dd>
+            <div class="block" th:with="tornei=${#lists.size(participatedTournaments) + #lists.size(organizedTournaments) + #lists.size(arbiteredTournaments)}">
+                <h2>Tornei</h2>
+                <p class="dim" th:if="${tornei == 0}">Nessun torneo, per ora.</p>
+                <table th:if="${tornei > 0}">
+                    <thead>
+                        <tr>
+                            <th>Torneo</th>
+                            <th>Ruolo</th>
+                            <th>Inizio</th>
+                            <th>Fine</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="t : ${participatedTournaments}">
+                            <td><a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a></td>
+                            <td class="dim">Giocatore</td>
+                            <td class="mono dim">
+                                <th:block th:replace="~{fragments/bits :: day(${t.startDate})}"></th:block>
+                            </td>
+                            <td class="mono dim">
+                                <th:block th:replace="~{fragments/bits :: day(${t.endDate})}"></th:block>
+                            </td>
+                        </tr>
+                        <tr th:each="t : ${organizedTournaments}">
+                            <td><a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a></td>
+                            <td class="dim">Organizzatore</td>
+                            <td class="mono dim">
+                                <th:block th:replace="~{fragments/bits :: day(${t.startDate})}"></th:block>
+                            </td>
+                            <td class="mono dim">
+                                <th:block th:replace="~{fragments/bits :: day(${t.endDate})}"></th:block>
+                            </td>
+                        </tr>
+                        <tr th:each="t : ${arbiteredTournaments}">
+                            <td><a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a></td>
+                            <td class="dim">Arbitro</td>
+                            <td class="mono dim">
+                                <th:block th:replace="~{fragments/bits :: day(${t.startDate})}"></th:block>
+                            </td>
+                            <td class="mono dim">
+                                <th:block th:replace="~{fragments/bits :: day(${t.endDate})}"></th:block>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-                <dt th:if="${member.dateOfBirth}">Data di nascita</dt>
-                <dd th:if="${member.dateOfBirth}" th:text="${member.dateOfBirth}"></dd>
+            <aside class="side">
+                <div class="block">
+                    <h2>Scheda</h2>
+                    <div class="facts">
+                        <div th:if="${member.title != null}">
+                            <span class="k">Titolo</span>
+                            <div class="v" th:text="${member.title}"></div>
+                        </div>
+                        <div th:if="${member.fideId != null}">
+                            <span class="k">ID FIDE</span>
+                            <div class="v mono" th:text="${member.fideId}"></div>
+                        </div>
+                        <div th:if="${member.fsiId != null}">
+                            <span class="k">ID FSI</span>
+                            <div class="v mono" th:text="${member.fsiId}"></div>
+                        </div>
+                        <div th:if="${member.countryCode != null}">
+                            <span class="k">Paese</span>
+                            <div class="v" th:text="${member.countryCode}"></div>
+                        </div>
+                        <div th:if="${member.dateOfBirth != null}">
+                            <span class="k">Nato il</span>
+                            <div class="v mono">
+                                <th:block th:replace="~{fragments/bits :: day(${member.dateOfBirth})}"></th:block>
+                            </div>
+                        </div>
+                        <div th:if="${member.gender != null}">
+                            <span class="k">Genere</span>
+                            <div class="v"><th:block th:replace="~{fragments/bits :: gender(${member.gender})}"></th:block></div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
 
-                <dt th:if="${member.gender}">Genere</dt>
-                <dd th:if="${member.gender}" th:text="${member.gender}"></dd>
-
-                <dt>Membro dal</dt>
-                <dd th:text="${member.signupDate}"></dd>
-            </dl>
-        </section>
-
-        <section class="card">
-            <h2>Dati scacchistici</h2>
-            <dl class="dl-grid">
-                <dt th:if="${member.title}">Titolo</dt>
-                <dd th:if="${member.title}" th:text="${member.title}"></dd>
-
-                <dt th:if="${member.fideId}">ID FIDE</dt>
-                <dd th:if="${member.fideId}" th:text="${member.fideId}"></dd>
-
-                <dt th:if="${member.fsiId}">ID FSI</dt>
-                <dd th:if="${member.fsiId}" th:text="${member.fsiId}"></dd>
-
-                <dt th:if="${member.countryCode}">Paese</dt>
-                <dd th:if="${member.countryCode}" th:text="${member.countryCode}"></dd>
-
-                <dt th:if="${member.province}">Provincia</dt>
-                <dd th:if="${member.province}" th:text="${member.province}"></dd>
-            </dl>
-        </section>
-
-        <section class="card">
-            <h2>Tornei giocati</h2>
-            <p th:if="${#lists.isEmpty(participatedTournaments)}" class="muted">Nessun torneo a cui ha partecipato.</p>
-            <ul th:unless="${#lists.isEmpty(participatedTournaments)}" class="list-plain">
-                <li th:each="t : ${participatedTournaments}">
-                    <a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="card" th:unless="${#lists.isEmpty(organizedTournaments)}">
-            <h2>Tornei organizzati</h2>
-            <ul class="list-plain">
-                <li th:each="t : ${organizedTournaments}">
-                    <a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="card" th:unless="${#lists.isEmpty(arbiteredTournaments)}">
-            <h2>Tornei arbitrati</h2>
-            <ul class="list-plain">
-                <li th:each="t : ${arbiteredTournaments}">
-                    <a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a>
-                </li>
-            </ul>
-        </section>
+        </div>
 
     </main>
 

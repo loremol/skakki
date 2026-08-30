@@ -1,59 +1,25 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="https://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Lista tornei club', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head('Tornei del club', ~{})}"></head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <a th:href="@{/tournaments}">Tornei</a>
-        </nav>
-
-        <h1>Lista tornei club</h1>
-
-        <p th:if="${#lists.isEmpty(tournaments)}" class="muted">Nessun torneo disponibile.</p>
-
-        <div th:unless="${#lists.isEmpty(tournaments)}" class="table-scroll">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Organizzatore</th>
-                        <th>Nome Torneo</th>
-                        <th>Chiusura iscrizioni</th>
-                        <th>Inizio</th>
-                        <th>Fine</th>
-                        <th>Luogo</th>
-                        <th>Numero di round</th>
-                        <th>Azioni</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="tournament : ${tournaments}">
-                        <td th:text="${tournament.organizer.username}"></td>
-                        <td th:text="${tournament.name}"></td>
-                        <td th:text="${tournament.registrationDeadline}"></td>
-                        <td th:text="${tournament.startDate}"></td>
-                        <td th:text="${tournament.endDate}"></td>
-                        <td th:text="${tournament.location}"></td>
-                        <td th:text="${tournament.numberOfRounds}"></td>
-                        <td>
-                            <a th:href="@{/admin/tournaments/{id}(id=${tournament.id})}"
-                                sec:authorize="hasRole('ADMIN')">Gestisci</a>
-                            <a th:href="@{/organize/tournament/{id}(id=${tournament.id})}"
-                                sec:authorize="hasRole('ORGANIZER')">Esamina richieste</a>
-                            <a th:href="@{/tournaments/{id}(id=${tournament.id})}">Dettagli</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="head">
+            <h1>Tornei del club</h1>
         </div>
+        <p class="sub"
+            th:text="${#lists.size(tournaments) == 1 ? 'un torneo in archivio' : #lists.size(tournaments) + ' tornei in archivio'}">
+        </p>
+
+        <p class="dim" th:if="${#lists.isEmpty(tournaments)}">Non c'è ancora nessun torneo.</p>
+        <th:block th:unless="${#lists.isEmpty(tournaments)}">
+            <th:block th:replace="~{fragments/bits :: tlist(${tournaments})}"></th:block>
+        </th:block>
 
     </main>
 

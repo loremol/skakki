@@ -1,73 +1,83 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="https://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Membri del club', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head('Soci', ~{})}"></head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <span>Admin</span>
-            <span class="sep">/</span>
-            <a th:href="@{/admin/members}">Membri</a>
-        </nav>
-
-        <h1>Membri del club</h1>
-
-        <div class="actions" style="margin-bottom:1rem">
-            <a th:href="@{/admin/members/new}" class="button">Crea nuovo membro</a>
+        <div class="head">
+            <h1>Soci</h1>
+            <span class="dim" th:text="${#lists.size(members)} + ' iscritti'"></span>
         </div>
 
-        <div class="table-scroll">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Nome</th>
-                        <th>Cognome</th>
-                        <th>Email</th>
-                        <th>Ruolo</th>
-                        <th>Data di iscrizione</th>
-                        <th>Data di nascita</th>
-                        <th>Genere</th>
-                        <th>ID FIDE</th>
-                        <th>ID FSI</th>
-                        <th>Paese</th>
-                        <th>Provincia</th>
-                        <th>Titolo</th>
-                        <th>Azioni</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="member : ${members}">
-                        <td th:text="${member.id}"></td>
-                        <td th:text="${member.username}"></td>
-                        <td th:text="${member.firstName}"></td>
-                        <td th:text="${member.lastName}"></td>
-                        <td th:text="${member.email}"></td>
-                        <td th:text="${T(java.lang.String).join(', ', member.roles.![name()])}"></td>
-                        <td th:text="${member.signupDate}"></td>
-                        <td th:text="${member.dateOfBirth}"></td>
-                        <td th:text="${member.gender}"></td>
-                        <td th:text="${member.fideId}"></td>
-                        <td th:text="${member.fsiId}"></td>
-                        <td th:text="${member.countryCode}"></td>
-                        <td th:text="${member.province}"></td>
-                        <td th:text="${member.title}"></td>
-                        <td>
-                            <a th:href="@{/admin/members/{id}(id=${member.id})}">Gestisci</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="row" style="margin:14px 0 18px">
+            <input id="filtro" type="search" placeholder="cerca nome, username, provincia…"
+                style="width:20rem" autocomplete="off">
+            <a th:href="@{/admin/members/new}" class="btn">Nuovo socio</a>
         </div>
+
+        <table id="soci">
+            <thead>
+                <tr>
+                    <th>Socio</th>
+                    <th>Ruoli</th>
+                    <th>Provincia</th>
+                    <th>Socio dal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="member : ${members}">
+                    <td>
+                        <a th:href="@{/admin/members/{id}(id=${member.id})}"
+                            th:text="${member.firstName != null ? member.firstName + ' ' + member.lastName : member.username}"></a>
+                        <span th:if="${member.title != null}" class="tag" th:text="${member.title}"></span>
+                        <span class="sub-line">
+                            <span class="pair"><span class="k">Username</span><th:block
+                                    th:text="${member.username}"></th:block></span>
+                            <span class="pair"><span class="k">Email</span><th:block
+                                    th:text="${member.email}"></th:block></span>
+                            <span class="pair" th:if="${member.fideId != null}"><span class="k">FIDE</span><th:block
+                                    th:text="${member.fideId}"></th:block></span>
+                            <span class="pair" th:if="${member.fsiId != null}"><span class="k">FSI</span><th:block
+                                    th:text="${member.fsiId}"></th:block></span>
+                            <span class="pair" th:if="${member.dateOfBirth != null}"><span class="k">Nato il</span>
+                                <th:block th:replace="~{fragments/bits :: day(${member.dateOfBirth})}"></th:block>
+                            </span>
+                            <span class="pair" th:if="${member.gender != null}"><span class="k">Genere</span>
+                                <th:block th:replace="~{fragments/bits :: gender(${member.gender})}"></th:block>
+                            </span>
+                        </span>
+                    </td>
+                    <td class="dim"><th:block th:replace="~{fragments/bits :: roles(${member.roles})}"></th:block></td>
+                    <td>
+                        <th:block th:text="${member.province}"></th:block>
+                        <span class="sub-line" th:if="${member.countryCode != null}"
+                            th:text="${member.countryCode}"></span>
+                    </td>
+                    <td class="mono dim">
+                        <th:block th:replace="~{fragments/bits :: day(${member.signupDate})}"></th:block>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <script>
+            // la lista soci diventa lunga in fretta
+            (function () {
+                var box = document.getElementById('filtro');
+                var righe = [].slice.call(document.querySelectorAll('#soci tbody tr'));
+                box.addEventListener('input', function () {
+                    var q = box.value.toLowerCase().trim();
+                    righe.forEach(function (r) {
+                        r.hidden = q !== '' && r.textContent.toLowerCase().indexOf(q) < 0;
+                    });
+                });
+            })();
+        </script>
 
     </main>
 

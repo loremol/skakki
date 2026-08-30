@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org">
 
 <head th:replace="~{fragments/layout :: head('Operazione non consentita', ~{})}"></head>
 
@@ -7,23 +7,15 @@
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <span>Errore</span>
-        </nav>
+        <div class="head">
+            <h1>Operazione non consentita</h1>
+            <span class="mono dim">409</span>
+        </div>
+        <p class="sub" th:text="${errorMessage != null ? errorMessage : 'L''operazione è in conflitto con lo stato attuale.'}"></p>
 
-        <section class="card card--narrow card--danger">
-            <h1>Operazione non consentita (409)</h1>
-            <p
-                th:text="${errorMessage != null ? errorMessage : 'L''operazione non può essere completata a causa di un conflitto.'}">
-            </p>
-            <div class="actions">
-                <a th:href="@{/}" class="button">Torna alla homepage</a>
-            </div>
-        </section>
+        <a th:href="@{/}" class="btn quiet">Torna ai tornei</a>
 
     </main>
 

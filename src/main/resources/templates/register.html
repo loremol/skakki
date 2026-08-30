@@ -1,57 +1,45 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Registrazione', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head('Iscriviti al club', ~{})}"></head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <span>Registrazione</span>
-        </nav>
-
-        <h1>Registrazione</h1>
-
-        <div th:if="${param.success}" class="alert alert--ok">
-            <p>Registrazione avvenuta con successo!</p>
+        <div class="head">
+            <h1>Iscriviti al club</h1>
         </div>
+        <p class="sub">Il resto della scheda (titolo, ID FIDE, provincia) lo compila la segreteria.</p>
 
-        <section class="card card--narrow">
-            <form th:action="@{/register}" th:object="${registrationDto}" method="post" class="form-grid">
-                <label for="username">Username</label>
-                <span>
+        <p class="note" th:if="${param.success}">Registrazione fatta, ora puoi entrare.</p>
+
+        <form th:action="@{/register}" th:object="${registrationDto}" method="post">
+            <div class="fields">
+                <div class="f">
+                    <label for="username">Username</label>
                     <input type="text" id="username" th:field="*{username}" required />
-                    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
-                        class="alert alert--inline alert--err"></span>
-                </span>
-
-                <label for="email">Email</label>
-                <span>
-                    <input type="email" id="email" th:field="*{email}" required />
-                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
-                        class="alert alert--inline alert--err"></span>
-                </span>
-
-                <label for="password">Password</label>
-                <span>
-                    <input type="password" id="password" th:field="*{password}" required />
-                    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-                        class="alert alert--inline alert--err"></span>
-                </span>
-
-                <div class="form-submit actions">
-                    <button type="submit" class="button">Registrati</button>
-                    <a th:href="@{/login}" class="button button--ghost">Accedi</a>
+                    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="err"></span>
                 </div>
-            </form>
-        </section>
-
-        <p class="muted"><a th:href="@{/login}">Hai già un account? Accedi</a></p>
+                <div class="f">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" th:field="*{email}" required />
+                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="err"></span>
+                </div>
+                <div class="f">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" th:field="*{password}" autocomplete="new-password"
+                        required />
+                    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="err"></span>
+                </div>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn">Iscriviti</button>
+                <span class="dim">hai già un account? <a th:href="@{/login}">entra</a></span>
+            </div>
+        </form>
 
     </main>
 

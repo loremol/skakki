@@ -1,139 +1,125 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Gestione membro', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head(${member.username}, ~{})}"></head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <span>Admin</span>
-            <span class="sep">/</span>
-            <a th:href="@{/admin/members}">Membri</a>
-            <span class="sep">/</span>
-            <span th:text="${member.username}"></span>
-        </nav>
+        <a class="back" th:href="@{/admin/members}">‹ soci</a>
 
-        <h1>Gestione di <span th:text="${member.username}"></span></h1>
-
-        <div th:if="${param.success}" class="alert alert--ok">
-            <p>Membro aggiornato con successo.</p>
+        <div class="head">
+            <h1 th:text="${member.username}"></h1>
+            <a class="dim" th:href="@{/u/{id}(id=${member.id})}">vedi il profilo pubblico</a>
         </div>
-        <div th:if="${errorMessage}" class="alert alert--err" th:text="${errorMessage}"></div>
+        <p class="sub">Socio dal <th:block th:replace="~{fragments/bits :: day(${member.signupDate})}"></th:block>.
+        </p>
+
+        <p class="note" th:if="${param.success}">Scheda aggiornata.</p>
+        <p class="note bad" th:if="${errorMessage}" th:text="${errorMessage}"></p>
 
         <form th:action="@{/admin/members/{id}(id=${member.id})}" th:object="${memberFields}" th:method="put">
             <input th:field="*{id}" type="hidden">
 
-            <section class="card">
+            <div class="block">
                 <h2>Account</h2>
-                <div class="form-grid">
-                    <label for="username">Username</label>
-                    <span>
+                <div class="fields">
+                    <div class="f">
+                        <label for="username">Username</label>
                         <input type="text" id="username" th:field="*{username}" />
-                        <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="email">Email</label>
-                    <span>
+                        <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="err"></span>
+                    </div>
+                    <div class="f">
+                        <label for="email">Email</label>
                         <input type="email" id="email" th:field="*{email}" />
-                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label>Ruoli</label>
-                    <div class="form-checkboxes">
-                        <label class="inline" th:each="role : ${roles}">
-                            <input type="checkbox" th:field="*{roles}" th:value="${role.name()}" />
-                            <span th:text="${role.name()}"></span>
-                        </label>
+                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="err"></span>
+                    </div>
+                    <div class="f">
+                        <label>Ruoli</label>
+                        <div class="check">
+                            <label th:each="role : ${roles}">
+                                <input type="checkbox" th:field="*{roles}" th:value="${role.name()}" />
+                                <span><th:block th:replace="~{fragments/bits :: role(${role})}"></th:block></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section class="card">
+            <div class="block">
                 <h2>Anagrafica</h2>
-                <div class="form-grid">
-                    <label for="firstName">Nome</label>
-                    <span>
+                <div class="fields">
+                    <div class="f">
+                        <label for="firstName">Nome</label>
                         <input type="text" id="firstName" th:field="*{firstName}" />
-                        <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="lastName">Cognome</label>
-                    <span>
+                        <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="err"></span>
+                    </div>
+                    <div class="f">
+                        <label for="lastName">Cognome</label>
                         <input type="text" id="lastName" th:field="*{lastName}" />
-                        <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="dateOfBirth">Data di nascita</label>
-                    <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" />
-
-                    <label for="gender">Genere</label>
-                    <select id="gender" th:field="*{gender}">
-                        <option value="" disabled hidden th:text="${member.gender}"></option>
-                        <option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender}"></option>
-                    </select>
-                </div>
-            </section>
-
-            <section class="card">
-                <h2>Dati scacchistici</h2>
-                <div class="form-grid">
-                    <label for="fideId">ID FIDE</label>
-                    <span>
-                        <input type="number" id="fideId" th:field="*{fideId}" />
-                        <span th:if="${#fields.hasErrors('fideId')}" th:errors="*{fideId}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="fsiId">ID FSI</label>
-                    <span>
-                        <input type="number" id="fsiId" th:field="*{fsiId}" />
-                        <span th:if="${#fields.hasErrors('fsiId')}" th:errors="*{fsiId}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="countryCode">Codice paese</label>
-                    <span>
-                        <input type="text" id="countryCode" th:field="*{countryCode}" />
-                        <span th:if="${#fields.hasErrors('countryCode')}" th:errors="*{countryCode}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="province">Provincia</label>
-                    <span>
+                        <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="err"></span>
+                    </div>
+                    <div class="f narrow">
+                        <label for="dateOfBirth">Nato il</label>
+                        <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" />
+                    </div>
+                    <div class="f narrow">
+                        <label for="gender">Genere</label>
+                        <select id="gender" th:field="*{gender}">
+                            <option value="" disabled hidden th:text="${member.gender}"></option>
+                            <option th:each="gender : ${genders}" th:value="${gender}"
+                                th:text="${gender.name() == 'MALE' ? 'Uomo' : 'Donna'}"></option>
+                        </select>
+                    </div>
+                    <div class="f narrow">
+                        <label for="province">Provincia</label>
                         <input type="text" id="province" th:field="*{province}" />
-                        <span th:if="${#fields.hasErrors('province')}" th:errors="*{province}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="title">Titolo scacchistico</label>
-                    <select id="title" th:field="*{title}">
-                        <option value="" disabled hidden th:text="${member.title}"></option>
-                        <option value=""></option>
-                        <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
-                    </select>
+                        <span th:if="${#fields.hasErrors('province')}" th:errors="*{province}" class="err"></span>
+                    </div>
                 </div>
-            </section>
+            </div>
 
-            <div class="actions">
-                <button type="submit" class="button">Aggiorna membro</button>
-                <a th:href="@{/admin/members}" class="button button--ghost">Torna alla lista</a>
+            <div class="block">
+                <h2>Scheda scacchistica</h2>
+                <div class="fields">
+                    <div class="f narrow">
+                        <label for="fideId">ID FIDE</label>
+                        <input type="number" id="fideId" th:field="*{fideId}" />
+                        <span th:if="${#fields.hasErrors('fideId')}" th:errors="*{fideId}" class="err"></span>
+                    </div>
+                    <div class="f narrow">
+                        <label for="fsiId">ID FSI</label>
+                        <input type="number" id="fsiId" th:field="*{fsiId}" />
+                        <span th:if="${#fields.hasErrors('fsiId')}" th:errors="*{fsiId}" class="err"></span>
+                    </div>
+                    <div class="f narrow">
+                        <label for="countryCode">Paese</label>
+                        <input type="text" id="countryCode" th:field="*{countryCode}" />
+                        <span th:if="${#fields.hasErrors('countryCode')}" th:errors="*{countryCode}" class="err"></span>
+                    </div>
+                    <div class="f narrow">
+                        <label for="title">Titolo</label>
+                        <select id="title" th:field="*{title}">
+                            <option value="" disabled hidden th:text="${member.title}"></option>
+                            <option value="">Nessuno</option>
+                            <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <button type="submit" class="btn">Salva</button>
+                <a th:href="@{/admin/members}" class="btn quiet">Annulla</a>
             </div>
         </form>
 
-        <form th:action="@{/admin/members/{id}(id=${member.id})}" th:method="delete" style="margin-top:1.25rem">
-            <button type="submit" class="button button--danger"
-                onclick="return confirm('Eliminare il membro? Questa operazione è irreversibile.')">Elimina
-                membro</button>
+        <form th:action="@{/admin/members/{id}(id=${member.id})}" th:method="delete" style="margin-top:26px">
+            <button type="submit" class="btn bad"
+                onclick="return confirm('Eliminare il socio? Non si torna indietro.')">Elimina il socio</button>
         </form>
 
     </main>

@@ -1,77 +1,63 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="https://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Crea nuovo torneo', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head('Nuovo torneo', ~{})}"></head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <span>Organizzatore</span>
-            <span class="sep">/</span>
-            <span>Crea torneo</span>
-        </nav>
-
-        <h1>Crea nuovo torneo</h1>
-
-        <div th:if="${param.success}" class="alert alert--ok">
-            <p>Torneo registrato con successo!</p>
+        <div class="head">
+            <h1>Nuovo torneo</h1>
         </div>
+        <p class="sub">Ne resti l'organizzatore: le iscrizioni e le candidature ad arbitro passeranno da te.</p>
+
+        <p class="note" th:if="${param.success}">Torneo creato.</p>
 
         <form th:object="${newTournamentDto}" method="post" th:action="@{/organize/create-tournament}">
 
-            <section class="card">
-                <h2>Dati torneo</h2>
-                <div class="form-grid">
+            <div class="fields">
+                <div class="f">
                     <label for="name">Nome</label>
-                    <span>
-                        <input type="text" id="name" th:field="*{name}" required autocomplete="off" />
-                        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="description">Descrizione</label>
-                    <span>
-                        <textarea id="description" th:field="*{description}" autocomplete="off"></textarea>
-                        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="registrationDeadline">Scadenza registrazione</label>
-                    <input type="date" id="registrationDeadline" th:field="*{registrationDeadline}" />
-
-                    <label for="startDate">Data inizio</label>
-                    <input type="date" id="startDate" th:field="*{startDate}" />
-
-                    <label for="endDate">Data fine</label>
-                    <input type="date" id="endDate" th:field="*{endDate}" />
-
+                    <input type="text" id="name" th:field="*{name}" required autocomplete="off" />
+                    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="err"></span>
+                </div>
+                <div class="f">
                     <label for="location">Luogo</label>
-                    <span>
-                        <input type="text" id="location" th:field="*{location}" autocomplete="off" />
-                        <span th:if="${#fields.hasErrors('location')}" th:errors="*{location}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
-
-                    <label for="numberOfRounds">Numero round</label>
-                    <span>
-                        <input type="number" id="numberOfRounds" th:field="*{numberOfRounds}" min="1" />
-                        <span th:if="${#fields.hasErrors('numberOfRounds')}" th:errors="*{numberOfRounds}"
-                            class="alert alert--inline alert--err"></span>
-                    </span>
+                    <input type="text" id="location" th:field="*{location}" autocomplete="off" />
+                    <span th:if="${#fields.hasErrors('location')}" th:errors="*{location}" class="err"></span>
                 </div>
-
-                <div class="actions" style="margin-top:1rem">
-                    <button type="submit" class="button">Crea torneo</button>
-                    <a th:href="@{/}" class="button button--ghost">Annulla</a>
+                <div class="f narrow">
+                    <label for="numberOfRounds">Turni</label>
+                    <input type="number" id="numberOfRounds" th:field="*{numberOfRounds}" min="1" />
+                    <span th:if="${#fields.hasErrors('numberOfRounds')}" th:errors="*{numberOfRounds}"
+                        class="err"></span>
                 </div>
-            </section>
+                <div class="f narrow">
+                    <label for="registrationDeadline">Iscrizioni entro</label>
+                    <input type="date" id="registrationDeadline" th:field="*{registrationDeadline}" />
+                </div>
+                <div class="f narrow">
+                    <label for="startDate">Inizio</label>
+                    <input type="date" id="startDate" th:field="*{startDate}" />
+                </div>
+                <div class="f narrow">
+                    <label for="endDate">Fine</label>
+                    <input type="date" id="endDate" th:field="*{endDate}" />
+                </div>
+                <div class="f wide">
+                    <label for="description">Descrizione</label>
+                    <textarea id="description" th:field="*{description}" autocomplete="off"></textarea>
+                    <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="err"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <button type="submit" class="btn">Crea il torneo</button>
+                <a th:href="@{/}" class="btn quiet">Annulla</a>
+            </div>
         </form>
 
     </main>

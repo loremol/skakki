@@ -1,45 +1,38 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Login', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head('Entra', ~{})}"></head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <span>Login</span>
-        </nav>
-
-        <h1>Login</h1>
-
-        <div th:if="${param.error}" class="alert alert--err">
-            <p>Username o password non validi.</p>
+        <div class="head">
+            <h1>Entra</h1>
         </div>
-        <div th:if="${param.logout}" class="alert alert--ok">
-            <p>Sei uscito con successo.</p>
-        </div>
+        <p class="sub">Serve l'account del club.</p>
 
-        <section class="card card--narrow">
-            <form th:action="@{/login}" method="post" class="form-grid">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required />
+        <p class="note bad" th:if="${param.error}">Username o password non validi.</p>
+        <p class="note" th:if="${param.logout}">Sei uscito.</p>
 
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required />
-
-                <div class="form-submit actions">
-                    <button type="submit" class="button">Accedi</button>
-                    <a th:href="@{/register}" class="button button--ghost">Iscriviti</a>
+        <form th:action="@{/login}" method="post">
+            <div class="fields">
+                <div class="f">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" autocomplete="username" required />
                 </div>
-            </form>
-        </section>
-
-        <p class="muted"><a th:href="@{/register}">Non hai un account? Iscriviti</a></p>
+                <div class="f">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required />
+                </div>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn">Entra</button>
+                <span class="dim">oppure <a th:href="@{/register}">iscriviti al club</a></span>
+            </div>
+        </form>
 
     </main>
 

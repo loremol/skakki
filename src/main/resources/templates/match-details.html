@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org">
 
 <head th:replace="~{fragments/layout :: head('Partita', ~{::extraHead})}">
     <th:block th:fragment="extraHead">
@@ -12,150 +12,163 @@
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page" th:with="haPgn=${match.pgn != null and !match.pgn.isEmpty()}">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <a th:href="@{/tournaments}">Tornei</a>
-            <span class="sep">/</span>
-            <a th:href="@{/tournaments/{id}(id=${tournament.id})}" th:text="${tournament.name}"></a>
-            <span class="sep">/</span>
-            <a th:href="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${match.round.id})}">Round
-                <span th:text="${match.round.roundNumber}"></span></a>
-            <span class="sep">/</span>
-            <span>Partita #<span th:text="${match.id}"></span></span>
-        </nav>
+        <a class="back"
+            th:href="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${match.round.id})}"
+            th:text="'‹ ' + ${tournament.name} + ', turno ' + ${match.round.roundNumber}"></a>
 
-        <h1>Partita #<span th:text="${match.id}"></span></h1>
+        <div class="head">
+            <h1>
+                <th:block th:replace="~{fragments/bits :: pname(${match.white})}"></th:block>
+                <span class="dim">-</span>
+                <th:block th:if="${match.black != null}">
+                    <th:block th:replace="~{fragments/bits :: pname(${match.black})}"></th:block>
+                </th:block>
+                <span th:if="${match.black == null}" class="dim">riposo</span>
+            </h1>
+        </div>
 
-        <section class="card">
-            <h2>Dettagli partita</h2>
-            <dl class="dl-grid">
-                <dt>Bianco</dt>
-                <dd>
-                    <a th:href="@{/u/{id}(id=${match.white.id})}"
-                        th:text="${(match.white.title != null ? match.white.title + ' ' : '') + (match.white.firstName != null ? match.white.firstName + ' ' + match.white.lastName : match.white.username)}"></a>
-                </dd>
+        <div class="sub inline-facts">
+            <span>
+                <span class="k">Tipo</span>
+                <span><th:block th:replace="~{fragments/bits :: mtype(${match.matchType})}"></th:block></span>
+            </span>
+            <span th:if="${match.round.playDate != null}">
+                <span class="k">Giocata il</span>
+                <span class="mono"><th:block th:replace="~{fragments/bits :: day(${match.round.playDate})}"></th:block></span>
+            </span>
+        </div>
 
-                <dt>Nero</dt>
-                <dd>
-                    <a th:if="${match.black != null}" th:href="@{/u/{id}(id=${match.black.id})}"
-                        th:text="${(match.black.title != null ? match.black.title + ' ' : '') + (match.black.firstName != null ? match.black.firstName + ' ' + match.black.lastName : match.black.username)}"></a>
-                    <span th:if="${match.black == null}">—</span>
-                </dd>
+        <div th:class="${haPgn} ? 'split game' : ''">
 
-                <dt>Risultato</dt>
-                <dd th:text="${match.result != null ? match.result : '—'}"></dd>
-
-                <dt>Punti Bianco</dt>
-                <dd th:text="${match.whitePoints != null ? match.whitePoints : '—'}"></dd>
-
-                <dt>Punti Nero</dt>
-                <dd th:text="${match.blackPoints != null ? match.blackPoints : '—'}"></dd>
-
-                <dt>Tipo partita</dt>
-                <dd th:text="${match.matchType}"></dd>
-
-                <dt th:if="${match.matchType.forfeit}">Forfettante</dt>
-                <dd th:if="${match.matchType.forfeit}">
-                    <a th:if="${match.matchType.name() == 'WHITE_FORFEIT'}" th:href="@{/u/{id}(id=${match.white.id})}"
-                        th:text="${(match.white.title != null ? match.white.title + ' ' : '') + (match.white.firstName != null ? match.white.firstName + ' ' + match.white.lastName : match.white.username)}"></a>
-                    <a th:if="${match.matchType.name() == 'BLACK_FORFEIT'}" th:href="@{/u/{id}(id=${match.black.id})}"
-                        th:text="${(match.black.title != null ? match.black.title + ' ' : '') + (match.black.firstName != null ? match.black.firstName + ' ' + match.black.lastName : match.black.username)}"></a>
-                </dd>
-
-                <dt>PGN</dt>
-                <dd>
-                    <pre class="pgn-box" th:if="${match.pgn != null and !match.pgn.isEmpty()}"
-                        th:text="${match.pgn}"></pre>
-                    <span th:if="${match.pgn == null or match.pgn.isEmpty()}">—</span>
-                </dd>
-            </dl>
-        </section>
-
-        <section class="card" th:if="${match.pgn != null and !match.pgn.isEmpty()}">
-            <h2>Scacchiera</h2>
-            <div id="board" class="board"></div>
-            <div class="board-controls">
-                <button id="btn-start" type="button">&lt;&lt;</button>
-                <button id="btn-prev" type="button">&lt;</button>
-                <button id="btn-next" type="button">&gt;</button>
-                <button id="btn-end" type="button">&gt;&gt;</button>
-                <span id="move-label" class="muted" style="margin-left:8px"></span>
+            <div th:if="${haPgn}">
+                <div id="board" class="board"></div>
+                <div class="controls">
+                    <button id="btn-start" type="button">&lt;&lt;</button>
+                    <button id="btn-prev" type="button">&lt;</button>
+                    <button id="btn-next" type="button">&gt;</button>
+                    <button id="btn-end" type="button">&gt;&gt;</button>
+                    <span id="move-label"></span>
+                </div>
+                <script th:inline="javascript">
+                    var pgn = /*[[${match.pgn}]]*/ '';
+                </script>
             </div>
-            <script th:inline="javascript">
-                var pgn = /*[[${match.pgn}]]*/ '';
-            </script>
-        </section>
 
-        <section class="card actions" th:if="${isArbiter}">
-            <h2>Azioni arbitro</h2>
-            <div class="actions">
-                <a th:href="@{/matches/{id}/edit(id=${match.id})}" class="button">Modifica partita</a>
-                <form th:action="@{/matches/{id}/delete(id=${match.id})}" th:method="delete">
-                    <button type="submit" class="button button--danger"
-                        onclick="return confirm('Eliminare questa partita?')">Elimina partita</button>
-                </form>
+            <div>
+
+                <div class="block">
+                    <h2>Esito</h2>
+                    <div class="big-res">
+                        <th:block th:replace="~{fragments/bits :: result(${match})}"></th:block>
+                    </div>
+                </div>
+
+                <div class="block">
+                    <h2>Tavolo</h2>
+                    <table class="tavolo">
+                        <tbody>
+                            <tr>
+                                <td class="dim" style="width:5rem">Bianco</td>
+                                <td><th:block th:replace="~{fragments/bits :: plink(${match.white})}"></th:block></td>
+                                <td class="num">
+                                    <th:block th:replace="~{fragments/bits :: points(${match.whitePoints})}"></th:block>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="dim">Nero</td>
+                                <td>
+                                    <th:block th:if="${match.black != null}">
+                                        <th:block th:replace="~{fragments/bits :: plink(${match.black})}"></th:block>
+                                    </th:block>
+                                    <span th:if="${match.black == null}" class="dim">Nessun avversario</span>
+                                </td>
+                                <td class="num">
+                                    <th:block th:replace="~{fragments/bits :: points(${match.blackPoints})}"></th:block>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="block" th:if="${haPgn}">
+                    <h2>Notazione</h2>
+                    <pre th:text="${match.pgn}"></pre>
+                </div>
+                <p class="dim" th:unless="${haPgn}">Le mosse non sono state trascritte.</p>
+
+                <div class="row" th:if="${isArbiter}">
+                    <a th:href="@{/matches/{id}/edit(id=${match.id})}" class="btn quiet">Correggi la partita</a>
+                    <form th:action="@{/matches/{id}/delete(id=${match.id})}" th:method="delete">
+                        <button type="submit" class="btn bad"
+                            onclick="return confirm('Eliminare questa partita?')">Elimina</button>
+                    </form>
+                </div>
+
             </div>
-        </section>
+
+        </div>
 
     </main>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js" crossorigin="anonymous"></script>
-    <script th:if="${match.pgn != null and !match.pgn.isEmpty()}">
-        (function () {
-            var game = new Chess();
-            game.load_pgn(pgn);
-            var history = game.history({ verbose: true });
+    <th:block th:if="${match.pgn != null and !match.pgn.isEmpty()}">
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
+            crossorigin="anonymous"></script>
+        <script>
+            (function () {
+                var game = new Chess();
+                game.load_pgn(pgn);
+                var history = game.history({ verbose: true });
 
-            var positions = [new Chess().fen()];
-            var temp = new Chess();
-            for (var i = 0; i < history.length; i++) {
-                temp.move(history[i]);
-                positions.push(temp.fen());
-            }
-
-            var currentIndex = positions.length - 1;
-
-            var board = Chessboard('board', {
-                position: positions[currentIndex],
-                pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
-            });
-
-            function updateLabel() {
-                if (currentIndex === 0) {
-                    document.getElementById('move-label').textContent = 'Posizione iniziale';
-                } else {
-                    var m = history[currentIndex - 1];
-                    document.getElementById('move-label').textContent =
-                        'Mossa ' + Math.ceil(currentIndex / 2) + (currentIndex % 2 === 1 ? '. ' : '... ') + m.san;
+                var positions = [new Chess().fen()];
+                var temp = new Chess();
+                for (var i = 0; i < history.length; i++) {
+                    temp.move(history[i]);
+                    positions.push(temp.fen());
                 }
-            }
 
-            document.getElementById('btn-start').addEventListener('click', function () {
-                currentIndex = 0;
-                board.position(positions[currentIndex], false);
-                updateLabel();
-            });
-            document.getElementById('btn-prev').addEventListener('click', function () {
-                if (currentIndex > 0) { currentIndex--; board.position(positions[currentIndex], false); updateLabel(); }
-            });
-            document.getElementById('btn-next').addEventListener('click', function () {
-                if (currentIndex < positions.length - 1) { currentIndex++; board.position(positions[currentIndex], false); updateLabel(); }
-            });
-            document.getElementById('btn-end').addEventListener('click', function () {
-                currentIndex = positions.length - 1;
-                board.position(positions[currentIndex], false);
-                updateLabel();
-            });
+                var at = positions.length - 1;
+                var label = document.getElementById('move-label');
 
-            updateLabel();
-        })();
-    </script>
+                var board = Chessboard('board', {
+                    position: positions[at],
+                    pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+                });
+
+                function show(i) {
+                    at = Math.max(0, Math.min(positions.length - 1, i));
+                    board.position(positions[at], false);
+                    if (at === 0) {
+                        label.textContent = 'Posizione iniziale';
+                    } else {
+                        var m = history[at - 1];
+                        label.textContent = Math.ceil(at / 2) + (at % 2 === 1 ? '. ' : '... ') + m.san;
+                    }
+                }
+
+                document.getElementById('btn-start').onclick = function () { show(0); };
+                document.getElementById('btn-prev').onclick = function () { show(at - 1); };
+                document.getElementById('btn-next').onclick = function () { show(at + 1); };
+                document.getElementById('btn-end').onclick = function () { show(positions.length - 1); };
+
+                // le frecce servono piu' dei bottoni quando si scorre una partita
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'ArrowLeft') { show(at - 1); }
+                    else if (e.key === 'ArrowRight') { show(at + 1); }
+                    else if (e.key === 'Home') { show(0); }
+                    else if (e.key === 'End') { show(positions.length - 1); }
+                    else { return; }
+                    e.preventDefault();
+                });
+
+                show(at);
+            })();
+        </script>
+    </th:block>
 
 </body>
 

@@ -1,85 +1,71 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org">
 
-<head th:replace="~{fragments/layout :: head('Round', ~{})}"></head>
+<head th:replace="~{fragments/layout :: head('Turno ' + ${round.roundNumber}, ~{})}">
+</head>
 
 <body>
 
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container">
+    <main class="page">
 
-        <nav class="breadcrumb">
-            <a th:href="@{/}">Homepage</a>
-            <span class="sep">/</span>
-            <a th:href="@{/tournaments}">Tornei</a>
-            <span class="sep">/</span>
-            <a th:href="@{/tournaments/{id}(id=${tournament.id})}" th:text="${tournament.name}"></a>
-            <span class="sep">/</span>
-            <span>Round <span th:text="${round.roundNumber}"></span></span>
-        </nav>
+        <a class="back" th:href="@{/tournaments/{id}(id=${tournament.id})}"
+            th:text="'‹ ' + ${tournament.name}"></a>
 
-        <h1>Round <span th:text="${round.roundNumber}"></span></h1>
-
-        <div th:if="${param.success}" class="alert alert--ok">
-            <p>Round aggiornato con successo.</p>
+        <div class="head">
+            <h1 th:text="'Turno ' + ${round.roundNumber}"></h1>
+            <span class="mono dim" th:if="${round.playDate != null}">
+                <th:block th:replace="~{fragments/bits :: day(${round.playDate})}"></th:block>
+            </span>
+            <span class="dim" th:if="${round.playDate == null}">data da fissare</span>
         </div>
+        <p class="note" th:if="${param.success}">Turno aggiornato.</p>
 
-        <section class="card">
-            <dl class="dl-grid">
-                <dt>Data</dt>
-                <dd th:text="${round.playDate != null ? round.playDate : 'Non definita'}"></dd>
-            </dl>
-        </section>
+        <div th:class="${isArbiter} ? 'split' : ''">
 
-        <section class="card matches">
-            <h2>Partite</h2>
-            <p th:if="${#lists.isEmpty(matches)}" class="muted">Nessuna partita registrata per questo round.</p>
-            <div th:unless="${#lists.isEmpty(matches)}" class="table-scroll">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Bianco</th>
-                            <th>Nero</th>
-                            <th>Risultato</th>
-                            <th>Tipo</th>
-                            <th>Punti Bianco</th>
-                            <th>Punti Nero</th>
-                        </tr>
-                    </thead>
+            <div class="block">
+                <h2>Partite</h2>
+                <p class="dim" th:if="${#lists.isEmpty(matches)}">Nessuna partita registrata in questo turno.</p>
+                <table class="pairings" th:unless="${#lists.isEmpty(matches)}">
                     <tbody>
-                        <tr th:each="match : ${matches}">
-                            <td th:text="${match.white.username}"></td>
-                            <td th:text="${match.black != null ? match.black.username : '—'}"></td>
-                            <td th:text="${match.result}"></td>
-                            <td th:text="${match.matchType}"></td>
-                            <td th:text="${match.whitePoints}"></td>
-                            <td th:text="${match.blackPoints}"></td>
+                        <tr th:each="match, i : ${matches}">
+                            <td class="board-no" th:text="${i.count}"></td>
+                            <td><th:block th:replace="~{fragments/bits :: plink(${match.white})}"></th:block></td>
+                            <td class="num">
+                                <a th:href="@{/matches/{matchId}(matchId=${match.id})}">
+                                    <th:block th:replace="~{fragments/bits :: result(${match})}"></th:block>
+                                </a>
+                            </td>
+                            <td>
+                                <th:block th:if="${match.black != null}">
+                                    <th:block th:replace="~{fragments/bits :: plink(${match.black})}"></th:block>
+                                </th:block>
+                                <span th:if="${match.black == null}" class="dim">Nessun avversario</span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
 
-        <section th:if="${isArbiter}" class="card arbiter-actions">
-            <h2>Azioni arbitro</h2>
-
-            <form th:action="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${round.id})}"
-                th:method="put" class="form-grid">
-                <label for="playDate">Data round</label>
-                <input type="date" id="playDate" name="playDate" th:value="${round.playDate}" />
-                <div class="form-submit actions">
-                    <button type="submit" class="button">Aggiorna data</button>
+            <aside class="side" th:if="${isArbiter}">
+                <div class="block">
+                    <h2>Da arbitro</h2>
+                    <form th:action="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${round.id})}"
+                        th:method="put" class="row">
+                        <input type="date" name="playDate" th:value="${round.playDate}" style="width:9.5rem" />
+                        <button type="submit" class="btn quiet">Sposta</button>
+                    </form>
+                    <form th:action="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${round.id})}"
+                        th:method="delete" style="margin-top:10px">
+                        <button type="submit" class="btn bad"
+                            onclick="return confirm('Eliminare il turno? Non si torna indietro.')">Elimina il
+                            turno</button>
+                    </form>
                 </div>
-            </form>
+            </aside>
 
-            <form th:action="@{/tournaments/{id}/rounds/{roundId}(id=${tournament.id}, roundId=${round.id})}"
-                th:method="delete" style="margin-top:1rem">
-                <button type="submit" class="button button--danger"
-                    onclick="return confirm('Eliminare il round? Questa operazione è irreversibile.')">Elimina
-                    round</button>
-            </form>
-        </section>
+        </div>
 
     </main>
 

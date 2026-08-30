@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+
+<body>
+
+    <!--/* Pezzetti riusabili: nomi, date, risultati. Stanno qui perche' erano
+         copiaincollati in mezza dozzina di pagine. */-->
+
+    <th:block th:fragment="pname(m)"
+        th:text="${m.firstName != null ? m.firstName + ' ' + m.lastName : m.username}"></th:block>
+
+    <span th:fragment="plink(m)">
+        <a th:href="@{/u/{id}(id=${m.id})}"
+            th:text="${m.firstName != null ? m.firstName + ' ' + m.lastName : m.username}"></a>
+        <span th:if="${m.title != null}" class="tag" th:text="${m.title}"></span>
+    </span>
+
+    <!--/* 4.5 -> 4½ : gli scacchi non producono altri decimali */-->
+    <th:block th:fragment="points(v)" th:with="w=${v == null ? 0 : v.intValue()},
+                     h=${v != null and (v - v.intValue()) > 0.25}"
+        th:text="${v == null ? '' : (h ? (w == 0 ? '½' : w + '½') : '' + w)}"></th:block>
+
+    <th:block th:fragment="result(m)">
+        <span th:if="${m.matchType.bye}" class="res bye">Bye</span>
+        <span th:unless="${m.matchType.bye}" class="res"
+            th:text="${(m.result == null ? '?' : (m.result.name() == 'WHITE_WIN' ? '1-0' : (m.result.name() == 'BLACK_WIN' ? '0-1' : '½-½'))) + (m.matchType.forfeit ? ' F' : '')}"></span>
+    </th:block>
+
+    <th:block th:fragment="mtype(t)"
+        th:text="${t.name() == 'BYE' ? 'Bye, turno di riposo' : (t.name() == 'WHITE_FORFEIT' ? 'Forfait del bianco' : (t.name() == 'BLACK_FORFEIT' ? 'Forfait del nero' : 'Partita normale'))}"></th:block>
+
+    <th:block th:fragment="day(d)" th:with="M=${#strings.arraySplit('gen,feb,mar,apr,mag,giu,lug,ago,set,ott,nov,dic', ',')}"
+        th:text="${d == null ? '' : d.dayOfMonth + ' ' + M[d.monthValue - 1] + ' ' + d.year}"></th:block>
+
+    <!--/* Il torneo non ha un campo "stato": lo si ricava dalle date. */-->
+    <th:block th:fragment="status(t)" th:with="oggi=${T(java.time.LocalDate).now()}">
+        <span th:if="${t.endDate != null and t.endDate.isBefore(oggi)}" class="pill">Concluso</span>
+        <span th:if="${t.startDate != null and !t.startDate.isAfter(oggi) and (t.endDate == null or !t.endDate.isBefore(oggi))}"
+            class="pill live">In corso</span>
+        <span th:if="${(t.startDate == null or t.startDate.isAfter(oggi)) and t.registrationDeadline != null and !t.registrationDeadline.isBefore(oggi)}"
+            class="pill open">Iscrizioni aperte</span>
+        <span th:if="${(t.startDate == null or t.startDate.isAfter(oggi)) and (t.registrationDeadline == null or t.registrationDeadline.isBefore(oggi))}"
+            class="pill">In programma</span>
+    </th:block>
+
+    <th:block th:fragment="reqstatus(s)">
+        <span th:if="${s.name() == 'ACCEPTED'}" class="pill live">Accettata</span>
+        <span th:if="${s.name() == 'REJECTED'}" class="pill">Rifiutata</span>
+        <span th:if="${s.name() == 'PENDING'}" class="pill open">In attesa</span>
+    </th:block>
+
+    <th:block th:fragment="gender(g)"
+        th:text="${g == null ? '' : (g.name() == 'MALE' ? 'Uomo' : 'Donna')}"></th:block>
+
+    <th:block th:fragment="role(r)"
+        th:text="${r.name() == 'ADMIN' ? 'Admin' : (r.name() == 'ORGANIZER' ? 'Organizzatore' : 'Socio')}"></th:block>
+
+    <th:block th:fragment="roles(rs)"><span th:each="r,i : ${rs}"
+            th:text="${(r.name() == 'ADMIN' ? 'Admin' : (r.name() == 'ORGANIZER' ? 'Organizzatore' : 'Socio')) + (i.last ? '' : ', ')}"></span></th:block>
+
+    <!--/* Elenco tornei, usato sia in home che su /tournaments */-->
+    <table th:fragment="tlist(tournaments)">
+        <thead>
+            <tr>
+                <th>Torneo</th>
+                <th>Stato</th>
+                <th>Inizio</th>
+                <th>Fine</th>
+                <th class="num">Turni</th>
+                <th class="num">Iscritti</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="t : ${tournaments}" th:with="finito=${t.endDate != null and t.endDate.isBefore(T(java.time.LocalDate).now())}">
+                <td th:with="lb=${finito ? @tournamentService.getLeaderboard(t) : null},
+                             vinc=${lb != null and !#lists.isEmpty(lb) and (#lists.size(lb) == 1 or lb[0].totalPoints > lb[1].totalPoints) ? lb[0] : null}">
+                    <a th:href="@{/tournaments/{id}(id=${t.id})}" th:text="${t.name}"></a>
+                    <!--/* a parita' di punti la classifica non decide un vincitore: meglio tacere */-->
+                    <span class="sub-line" th:if="${vinc != null}">
+                        Vinto da <th:block th:replace="~{fragments/bits :: pname(${vinc.member})}"></th:block>
+                        con <th:block th:replace="~{fragments/bits :: points(${vinc.totalPoints})}"></th:block> punti
+                    </span>
+                    <span class="sub-line" th:if="${vinc == null}"
+                        th:text="${t.location != null ? t.location : 'Sede da definire'}"></span>
+                </td>
+                <td><th:block th:replace="~{fragments/bits :: status(${t})}"></th:block></td>
+                <td class="mono dim"><th:block th:replace="~{fragments/bits :: day(${t.startDate})}"></th:block></td>
+                <td class="mono dim"><th:block th:replace="~{fragments/bits :: day(${t.endDate})}"></th:block></td>
+                <td class="num" th:text="${t.numberOfRounds}"></td>
+                <td class="num" th:text="${#lists.size(t.participants)}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
