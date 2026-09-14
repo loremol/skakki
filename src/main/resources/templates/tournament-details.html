@@ -158,9 +158,9 @@
                         <div>
                             <span class="k">Il tuo ruolo</span>
                             <div class="v row">
-                                <span th:if="${isOrganizer}" class="pill live">Organizzatore</span>
-                                <span th:if="${isArbiter}" class="pill live">Arbitro</span>
-                                <span th:if="${isParticipant}" class="pill live">Iscritto</span>
+                                <span th:if="${isOrganizer}">Organizzatore</span>
+                                <span th:if="${isArbiter}">Arbitro</span>
+                                <span th:if="${isParticipant}">Iscritto</span>
                                 <span th:if="${!isOrganizer and !isArbiter and !isParticipant}"
                                     class="dim">Nessuno</span>
                             </div>

@@ -34,7 +34,7 @@
                     <td>
                         <a th:href="@{/admin/members/{id}(id=${member.id})}"
                             th:text="${member.firstName != null ? member.firstName + ' ' + member.lastName : member.username}"></a>
-                        <span th:if="${member.title != null}" class="tag" th:text="${member.title}"></span>
+                        <span th:if="${member.title != null}" th:text="${member.title}"></span>
                         <span class="sub-line">
                             <span class="pair"><span class="k">Username</span><th:block
                                     th:text="${member.username}"></th:block></span>

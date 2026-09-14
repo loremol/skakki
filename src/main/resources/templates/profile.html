@@ -12,7 +12,7 @@
         <div class="head">
             <h1 th:text="${member.firstName != null ? member.firstName + ' ' + member.lastName : member.username}">
             </h1>
-            <span th:if="${member.title != null}" class="tag" th:text="${member.title}"></span>
+            <span th:if="${member.title != null}" th:text="${member.title}"></span>
         </div>
 
         <div class="sub inline-facts">

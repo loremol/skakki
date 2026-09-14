@@ -167,11 +167,6 @@ p {
     margin-bottom: 4px;
 }
 
-/* il badge di stato e' un riquadro, non testo: va centrato sul titolo */
-.head .pill {
-    align-self: center;
-}
-
 .sub {
     color: var(--dim);
     font-size: 13px;
@@ -278,35 +273,7 @@ tr.me td {
     font-weight: 600;
 }
 
-/* pills, tags, results */
-
-.pill {
-    display: inline-block;
-    font-size: 13px;
-    letter-spacing: .03em;
-    padding: 0 5px;
-    border: 1px solid currentColor;
-    border-radius: 2px;
-    color: var(--dim);
-    white-space: nowrap;
-}
-
-.pill.live {
-    color: var(--acc);
-}
-
-.pill.open {
-    color: var(--warm);
-}
-
-.tag {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--dim);
-    border: 1px solid var(--line);
-    border-radius: 2px;
-    padding: 0 3px;
-}
+/* results */
 
 .res {
     font-family: var(--mono);

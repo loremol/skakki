@@ -12,7 +12,7 @@
     <span th:fragment="plink(m)">
         <a th:href="@{/u/{id}(id=${m.id})}"
             th:text="${m.firstName != null ? m.firstName + ' ' + m.lastName : m.username}"></a>
-        <span th:if="${m.title != null}" class="tag" th:text="${m.title}"></span>
+        <span th:if="${m.title != null}" th:text="${m.title}"></span>
     </span>
 
     <!--/* 4.5 -> 4½ : gli scacchi non producono altri decimali */-->
@@ -34,19 +34,19 @@
 
     <!--/* Il torneo non ha un campo "stato": lo si ricava dalle date. */-->
     <th:block th:fragment="status(t)" th:with="oggi=${T(java.time.LocalDate).now()}">
-        <span th:if="${t.endDate != null and t.endDate.isBefore(oggi)}" class="pill">Concluso</span>
+        <span th:if="${t.endDate != null and t.endDate.isBefore(oggi)}">Concluso</span>
         <span th:if="${t.startDate != null and !t.startDate.isAfter(oggi) and (t.endDate == null or !t.endDate.isBefore(oggi))}"
-            class="pill live">In corso</span>
+            >In corso</span>
         <span th:if="${(t.startDate == null or t.startDate.isAfter(oggi)) and t.registrationDeadline != null and !t.registrationDeadline.isBefore(oggi)}"
-            class="pill open">Iscrizioni aperte</span>
+            >Iscrizioni aperte</span>
         <span th:if="${(t.startDate == null or t.startDate.isAfter(oggi)) and (t.registrationDeadline == null or t.registrationDeadline.isBefore(oggi))}"
-            class="pill">In programma</span>
+            >In programma</span>
     </th:block>
 
     <th:block th:fragment="reqstatus(s)">
-        <span th:if="${s.name() == 'ACCEPTED'}" class="pill live">Accettata</span>
-        <span th:if="${s.name() == 'REJECTED'}" class="pill">Rifiutata</span>
-        <span th:if="${s.name() == 'PENDING'}" class="pill open">In attesa</span>
+        <span th:if="${s.name() == 'ACCEPTED'}">Accettata</span>
+        <span th:if="${s.name() == 'REJECTED'}">Rifiutata</span>
+        <span th:if="${s.name() == 'PENDING'}">In attesa</span>
     </th:block>
 
     <th:block th:fragment="gender(g)"
