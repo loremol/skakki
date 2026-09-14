@@ -10,25 +10,40 @@ It handles four roles: admin, tournament organizer, tournament arbiter (which is
 
 ## Quick start
 
-For a local demo, start Skakki with the in-memory H2 database:
+### Demo mode
+
+For a local demo with mock data, start Skakki with the in-memory H2 database and set `SKAKKI_DEMO=true`:
+
+```sh
+SKAKKI_DEMO=true ./mvnw spring-boot:run -Dspring-boot.run.profiles=h2
+```
+
+Demo mode loads sample members, tournaments, rounds, matches, and requests for visualisation purposes. Open [http://localhost:8080](http://localhost:8080) to view them.
+
+### Non-demo mode
+
+Without `SKAKKI_DEMO=true`, Skakki starts without sample data. With an empty database, it creates an `admin` account and logs a securely generated password once during startup:
 
 ```sh
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=h2
 ```
 
-@ [http://localhost:8080](http://localhost:8080).
+Use the logged credentials to sign in and change the password. If the `admin` account already exists, it is left unchanged and no new credentials are logged.
 
 ### PostgreSQL
 
-To use PostgreSQL, set the database environment variables described in the [configuration](#configuration) section and start the application without the H2 profile:
+To use PostgreSQL, set the database environment variables described in the [configuration](#configuration) section and start the application, generating a secure starting `password` for the admin account:
 
 ```sh
 ./mvnw spring-boot:run
 ```
 
+The securely generated starting `admin` password is in the last line of the startup logs.
+Add `SKAKKI_DEMO=true` to the command when sample data is desired.
+
 ## Demo credentials
 
-The H2 profile includes the following demo accounts:
+These accounts are available only when `SKAKKI_DEMO=true`:
 
 | Username | Password | Roles |
 |---|---|---|
@@ -42,9 +57,10 @@ The H2 profile includes the following demo accounts:
 | Environment variable | Required | Default | Description |
 |---|---:|---|---|
 | `SKAKKI_SERVER_PORT` | No | `8080` | Port on which the server listens. |
-| `SKAKKI_DB_URL` | PostgreSQL | — | JDBC URL of the PostgreSQL database. |
-| `SKAKKI_DB_USER` | PostgreSQL | — | PostgreSQL database username. |
-| `SKAKKI_DB_PASSWORD` | PostgreSQL | — | PostgreSQL database password. |
+| `SKAKKI_DEMO` | No | `false` | When `true`, load demo data instead of creating a fresh non-demo admin account. |
+| `SKAKKI_DB_URL` | PostgreSQL | n/a | JDBC URL of the PostgreSQL database. |
+| `SKAKKI_DB_USER` | PostgreSQL | n/a | PostgreSQL database username. |
+| `SKAKKI_DB_PASSWORD` | PostgreSQL | n/a | PostgreSQL database password. |
 
 Example PostgreSQL configuration:
 
@@ -59,8 +75,9 @@ export SKAKKI_DB_PASSWORD=secret
 
 | Command | Description |
 |---|---|
-| `./mvnw spring-boot:run -Dspring-boot.run.profiles=h2` | Run the application with the in-memory H2 database. |
-| `./mvnw spring-boot:run` | Run the application with PostgreSQL configuration. |
+| `SKAKKI_DEMO=true ./mvnw spring-boot:run -Dspring-boot.run.profiles=h2` | Run the demo with the in-memory H2 database. |
+| `./mvnw spring-boot:run -Dspring-boot.run.profiles=h2` | Run non-demo mode with the in-memory H2 database. |
+| `./mvnw spring-boot:run` | Run non-demo mode with PostgreSQL configuration. |
 | `./mvnw test` | Run unit and functional tests using H2. |
 | `./mvnw clean package` | Clean and build the production JAR. |
 

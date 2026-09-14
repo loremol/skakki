@@ -177,7 +177,7 @@ public class MockDataInitializer implements ApplicationRunner {
                                 chiara, roberto, federica, andrea, valentina, stefano, elena, giuseppe);
         }
 
-        // T1 — Torneo Primaverile di Firenze 2024 (past, completed)
+        // T1 - Torneo Primaverile di Firenze 2024 (past, completed)
         private void createTorneoPrimaverile(Member admin, Member marco,
                         Member giulia, Member luca, Member anna, Member davide,
                         Member sara, Member chiara, Member roberto, Member federica,
@@ -208,7 +208,7 @@ public class MockDataInitializer implements ApplicationRunner {
                 }
         }
 
-        // T2 — Campionato Scacchistico Senese 2024 (past, completed)
+        // T2 - Campionato Scacchistico Senese 2024 (past, completed)
         private void createCampionatoSenese(Member admin, Member marco,
                         Member giulia, Member luca, Member anna, Member davide,
                         Member matteo, Member chiara, Member roberto, Member federica,
@@ -238,7 +238,7 @@ public class MockDataInitializer implements ApplicationRunner {
                 }
         }
 
-        // T3 — Torneo dell'Estate Pisana 2024 (past, completed)
+        // T3 - Torneo dell'Estate Pisana 2024 (past, completed)
         private void createTorneoEstivo(Member admin, Member marco,
                         Member giulia, Member luca, Member anna, Member davide,
                         Member sara, Member chiara, Member roberto, Member andrea,
@@ -267,7 +267,7 @@ public class MockDataInitializer implements ApplicationRunner {
                 }
         }
 
-        // T4 — Torneo d'Autunno Aretino 2025 (ongoing, 3/5 rounds played)
+        // T4 - Torneo d'Autunno Aretino 2025 (ongoing, 3/5 rounds played)
         private void createTorneoAutunno(Member admin, Member marco, Member giulia,
                         Member luca, Member anna, Member davide, Member sara, Member matteo,
                         Member chiara, Member roberto, Member federica, Member andrea,
@@ -305,7 +305,7 @@ public class MockDataInitializer implements ApplicationRunner {
                 savePendingArbiterApplication(giuseppe, t);
         }
 
-        // T5 — Gran Premio Invernale di Grosseto 2026 (future, registration open)
+        // T5 - Gran Premio Invernale di Grosseto 2026 (future, registration open)
         private void createGranPremioInvernale(Member admin, Member marco, Member giulia,
                         Member luca, Member anna, Member davide, Member sara, Member matteo,
                         Member chiara, Member roberto, Member federica, Member andrea,
@@ -325,7 +325,7 @@ public class MockDataInitializer implements ApplicationRunner {
                 participants.forEach(t::addParticipant);
                 tournamentRepository.save(t);
 
-                // No rounds yet — pending/rejected requests
+                // No rounds yet - pending/rejected requests
                 savePendingSignupRequest(davide, t);
                 savePendingSignupRequest(andrea, t);
                 savePendingSignupRequest(stefano, t);
