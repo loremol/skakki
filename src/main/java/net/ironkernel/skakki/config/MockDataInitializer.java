@@ -325,7 +325,16 @@ public class MockDataInitializer implements ApplicationRunner {
                 participants.forEach(t::addParticipant);
                 tournamentRepository.save(t);
 
-                // No rounds yet - pending/rejected requests
+                LocalDate[] dates = {
+                                LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 2),
+                                LocalDate.of(2026, 2, 3), LocalDate.of(2026, 2, 4),
+                                LocalDate.of(2026, 2, 5)
+                };
+                for (int i = 0; i < dates.length; i++) {
+                        Round round = saveRound(t, (short) (i + 1), dates[i]);
+                        populateRound(round, rotated(participants, i));
+                }
+
                 savePendingSignupRequest(davide, t);
                 savePendingSignupRequest(andrea, t);
                 savePendingSignupRequest(stefano, t);
