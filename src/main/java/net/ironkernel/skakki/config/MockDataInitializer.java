@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ import net.ironkernel.skakki.service.strategy.MatchStrategyFactory;
 @Slf4j
 @Component
 @Profile("!test")
+@ConditionalOnProperty(prefix = "skakki", name = "demo", havingValue = "true")
 @RequiredArgsConstructor
 public class MockDataInitializer implements ApplicationRunner {
         private final MemberRepository memberRepository;
