@@ -9,16 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added complete rounds and matches to the Gran Premio Invernale demo tournament.
+- Added support for selecting demo mode with the `SKAKKI_DEMO=true` environment variable.
+- Added automatic creation of an initial admin account in non-demo deployments, with a securely generated startup password.
+- Added additional rounds and matches to the sample future tournament.
 
 ### Changed
 
-- Changed demo data loading to require `SKAKKI_DEMO=true`; non-demo deployments now start without sample data.
-- Simplified tournament statuses, member titles, request statuses, and role labels by rendering them as plain text instead of badges.
+- Updated the setup documentation and commands to distinguish demo and non-demo operation.
+- Simplified tournament statuses, member titles, and user-role displays by removing their pill and tag styling.
 
 ### Security
 
-- Added automatic creation of an initial administrator account with a securely generated, one-time startup password for empty non-demo databases.
+- Demo credentials and sample data are no longer loaded unless `SKAKKI_DEMO=true` is explicitly set.
 
 ## [1.1.0] - 2026-09-14
 
