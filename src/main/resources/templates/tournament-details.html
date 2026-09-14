@@ -54,6 +54,7 @@
                                 <th>Giocatore</th>
                                 <th class="num">Punti</th>
                                 <th class="num">Buchholz</th>
+                                <th class="num">Sonneborn-Berger</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,6 +70,10 @@
                                 <td class="num">
                                     <th:block
                                         th:replace="~{fragments/bits :: points(${entry.buchholzPoints})}"></th:block>
+                                </td>
+                                <td class="num">
+                                    <th:block
+                                        th:replace="~{fragments/bits :: points(${entry.sonnebornBergerPoints})}"></th:block>
                                 </td>
                             </tr>
                         </tbody>

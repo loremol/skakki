@@ -15,10 +15,10 @@
         <span th:if="${m.title != null}" th:text="${m.title}"></span>
     </span>
 
-    <!--/* 4.5 -> 4½ : gli scacchi non producono altri decimali */-->
+    <!--/* I punti partita usano i mezzi; gli spareggi possono produrre anche quarti. */-->
     <th:block th:fragment="points(v)" th:with="w=${v == null ? 0 : v.intValue()},
-                     h=${v != null and (v - v.intValue()) > 0.25}"
-        th:text="${v == null ? '' : (h ? (w == 0 ? '½' : w + '½') : '' + w)}"></th:block>
+                     f=${v == null ? 0 : v - v.intValue()}"
+        th:text="${v == null ? '' : (f > 0.625 ? (w == 0 ? '¾' : w + '¾') : (f > 0.375 ? (w == 0 ? '½' : w + '½') : (f > 0.125 ? (w == 0 ? '¼' : w + '¼') : '' + w)))}"></th:block>
 
     <th:block th:fragment="result(m)">
         <span th:if="${m.matchType.bye}" class="res bye">Bye</span>

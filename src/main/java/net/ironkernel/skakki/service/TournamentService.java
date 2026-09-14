@@ -82,8 +82,10 @@ public class TournamentService {
         List<Match> matches = tournament.getMatches();
         Map<Member, Float> points = calculatePoints(tournament.getParticipants(), matches);
         Map<Member, Float> buchholz = calculateBuchholz(tournament.getParticipants(), matches, points);
-        List<Member> sorted = sortByPointsThenBuchholz(tournament.getParticipants(), points, buchholz);
-        return buildLeaderboard(sorted, points, buchholz);
+        Map<Member, Float> sonnebornBerger = calculateSonnebornBerger(tournament.getParticipants(), matches, points);
+        List<Member> sorted = sortByPointsThenBuchholzThenSonnebornBerger(
+                tournament.getParticipants(), points, buchholz, sonnebornBerger);
+        return buildLeaderboard(sorted, points, buchholz, sonnebornBerger);
     }
 
     private Map<Member, Float> calculatePoints(Set<Member> participants, List<Match> matches) {
@@ -121,24 +123,46 @@ public class TournamentService {
         return buchholz;
     }
 
-    private List<Member> sortByPointsThenBuchholz(Set<Member> participants, Map<Member, Float> points,
-            Map<Member, Float> buchholz) {
+    private Map<Member, Float> calculateSonnebornBerger(Set<Member> participants, List<Match> matches,
+            Map<Member, Float> points) {
+        Map<Member, Float> sonnebornBerger = new HashMap<>();
+        for (Member participant : participants) {
+            sonnebornBerger.put(participant, 0f);
+        }
+        for (Match match : matches) {
+            Member white = match.getWhite();
+            Member black = match.getBlack();
+            if (black == null) // Bye
+                continue;
+            if (match.getWhitePoints() != null) {
+                float contribution = match.getWhitePoints() * points.getOrDefault(black, 0f);
+                sonnebornBerger.put(white, sonnebornBerger.getOrDefault(white, 0f) + contribution);
+            }
+            if (match.getBlackPoints() != null) {
+                float contribution = match.getBlackPoints() * points.getOrDefault(white, 0f);
+                sonnebornBerger.put(black, sonnebornBerger.getOrDefault(black, 0f) + contribution);
+            }
+        }
+        return sonnebornBerger;
+    }
+
+    private List<Member> sortByPointsThenBuchholzThenSonnebornBerger(Set<Member> participants,
+            Map<Member, Float> points, Map<Member, Float> buchholz, Map<Member, Float> sonnebornBerger) {
         List<Member> sorted = new ArrayList<>(participants);
         sorted.sort((a, b) -> {
             int cmp = Float.compare(points.getOrDefault(b, 0f), points.getOrDefault(a, 0f));
-            if (cmp != 0) // Se un membro ha più punti ordina in base a quello
+            if (cmp != 0)
                 return cmp;
-            return Float.compare(buchholz.getOrDefault(b, 0f), buchholz.getOrDefault(a, 0f)); // Se hanno lo stesso
-                                                                                              // numero di punti
-                                                                                              // (Float.compare == 0)
-                                                                                              // ordina in base a
-                                                                                              // buchholz
+            cmp = Float.compare(buchholz.getOrDefault(b, 0f), buchholz.getOrDefault(a, 0f));
+            if (cmp != 0)
+                return cmp;
+            return Float.compare(sonnebornBerger.getOrDefault(b, 0f), sonnebornBerger.getOrDefault(a, 0f));
         });
         return sorted;
     }
 
     private List<LeaderboardRow> buildLeaderboard(List<Member> sorted, Map<Member, Float> points,
-            Map<Member, Float> buchholz) {
+            Map<Member, Float> buchholz, Map<Member, Float> sonnebornBerger) {
         List<LeaderboardRow> leaderboard = new ArrayList<>();
         for (int i = 0; i < sorted.size(); i++) {
             Member member = sorted.get(i);
@@ -146,7 +170,8 @@ public class TournamentService {
                     i + 1,
                     member,
                     points.getOrDefault(member, 0f),
-                    buchholz.getOrDefault(member, 0f)));
+                    buchholz.getOrDefault(member, 0f),
+                    sonnebornBerger.getOrDefault(member, 0f)));
         }
         return leaderboard;
     }
