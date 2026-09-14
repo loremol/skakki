@@ -63,7 +63,7 @@ export SKAKKI_DB_PASSWORD=secret
 | `./mvnw spring-boot:run` | Run the application with PostgreSQL configuration. |
 | `./mvnw test` | Run unit and functional tests using H2. |
 | `./mvnw clean package` | Clean and build the production JAR. |
-| `java -jar target/skakki-1.0.jar` | Run the packaged application. |
+| `java -jar target/skakki-1.1.0.jar` | Run the packaged application. |
 
 ## Stack
 

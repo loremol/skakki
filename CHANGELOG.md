@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-14
+
 ### Added
 
 - Added an H2 profile for running local demonstrations and tests without PostgreSQL.
@@ -27,5 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added tournament leaderboards and match details with PGN-based game replay.
 - Added PostgreSQL persistence and database-backed demo data.
 
-[Unreleased]: https://github.com/loremol/skakki/compare/ce949aea85337d0e522f5239dbb4aa22a19797cb...HEAD
+[Unreleased]: https://github.com/loremol/skakki/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/loremol/skakki/compare/ce949aea85337d0e522f5239dbb4aa22a19797cb...v1.1.0
 [1.0.0]: https://github.com/loremol/skakki/commit/ce949aea85337d0e522f5239dbb4aa22a19797cb
