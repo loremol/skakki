@@ -5,6 +5,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-14
+
+### Added
+
+- Added complete rounds and matches to the Gran Premio Invernale demo tournament.
+
+### Changed
+
+- Changed demo data loading to require `SKAKKI_DEMO=true`; non-demo deployments now start without sample data.
+- Simplified tournament statuses, member titles, request statuses, and role labels by rendering them as plain text instead of badges.
+
+### Security
+
+- Added automatic creation of an initial administrator account with a securely generated, one-time startup password for empty non-demo databases.
+
 ## [1.1.0] - 2026-09-14
 
 ### Added
@@ -29,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added tournament leaderboards and match details with PGN-based game replay.
 - Added PostgreSQL persistence and database-backed demo data.
 
-[Unreleased]: https://github.com/loremol/skakki/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/loremol/skakki/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/loremol/skakki/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/loremol/skakki/compare/ce949aea85337d0e522f5239dbb4aa22a19797cb...v1.1.0
 [1.0.0]: https://github.com/loremol/skakki/commit/ce949aea85337d0e522f5239dbb4aa22a19797cb
